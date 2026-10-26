@@ -1,0 +1,1330 @@
+<!doctype html>
+<!--
+  GULP · dead coins get swallowed by the sun
+  One self-contained file. No build step. Fonts come from Google Fonts with fallbacks.
+  Visual system: black-and-white manga ink (derived from the supplied starting file, MIT licensed).
+
+  CONFIG   window.GULP_CONFIG (next script block) holds rpc, token mint, quorum, rules, X link, api, flags.
+  ROUTES   #/  #/main-tool  #/vote  #/how  #/board  #/p/<id>
+  WALLET   injected providers only (Phantom, Solflare, Backpack, Coinbase, Trust). signMessage only,
+           never a transaction.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GULP · Dead coins get swallowed by the sun</title>
+<meta name="description" content="Paste a quiet Solana coin, see in seconds if it qualifies to be absorbed, and vote on it with your wallet. Signatures only, never your funds.">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script>
+/* ===== GULP CONFIG: edit this block ===== */
+window.GULP_CONFIG = {
+  name: 'GULP',
+  ticker: '$GULP',
+  rpc: 'https://api.mainnet-beta.solana.com',   // use a dedicated RPC (Helius, QuickNode...) for launch
+  tokenMint: '',                                 // paste the $GULP mint at launch. Empty = pre-launch (1 wallet = 1 vote)
+  quorum: 25,                                    // total vote weight needed for a result to count
+  voteDays: 5,                                   // how long a nomination stays open
+  rules: {                                       // thresholds for the verdict badge
+    minAgeDays: 7,
+    goodMaxLiquidityUsd: 3000,
+    goodMaxVolume24hUsd: 500,
+    riskyMaxLiquidityUsd: 15000,
+    riskyMaxVolume24hUsd: 5000
+  },
+  xUrl: 'https://x.com/',                        // your X profile
+  siteUrl: '',                                   // public site URL used in share links (blank = current page)
+  api: '',                                       // optional backend base URL. POSTs /proposals and /votes
+  seedHistory: true,                             // set false before launch to start with an empty ledger
+  features: { wallet: true, share: true }
+};
+</script>
+<style>
+:root{--ink:#111;--paper:#f8f8f5;--white:#fff;--grey:#e2e2df;--mid:#bdbdb8}
+*,*:before,*:after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle,#d8d8d3 1px,transparent 1.3px) 0 0/9px 9px,#ecece7;color:var(--ink);font-family:"Barlow Condensed",Impact,sans-serif;font-size:17px;line-height:1.55}
+a{color:inherit}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.page{max-width:1120px;margin:28px auto;background:var(--paper);border:4px solid var(--ink);box-shadow:10px 10px 0 var(--ink);overflow:hidden;position:relative;z-index:1}
+
+/* NAV (top bar sits above pages) */
+.nav{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 22px;border-bottom:4px solid var(--ink);background:var(--white)}
+.logo{font:400 30px/1 "Bangers",Impact,sans-serif;letter-spacing:2px;text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo-mark{width:46px;height:46px;display:block;transform:rotate(-4deg)}
+.nav ul{display:flex;gap:24px;list-style:none;margin:0;padding:0}
+.nav ul a{text-decoration:none;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:14px;padding:2px 4px}
+.nav ul a:hover,.nav ul a[aria-current]{background:var(--ink);color:var(--white)}
+.btn{display:inline-block;cursor:pointer;white-space:nowrap;background:var(--ink);color:var(--white);border:3px solid var(--ink);padding:9px 20px;font:400 20px/1 "Bangers",Impact,sans-serif;letter-spacing:2px;text-decoration:none;box-shadow:4px 4px 0 var(--mid);transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--mid)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--mid)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--mid)}
+.btn-ghost{background:var(--white);color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.btn-ghost:hover{box-shadow:6px 6px 0 var(--ink)}
+.btn-sm{padding:6px 14px;font-size:17px}
+
+/* VIEWS */
+.view{display:none;position:relative;z-index:5}
+.view.on{display:block}
+.wrap{padding:14px}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;min-height:500px;border-bottom:5px solid var(--ink);background:radial-gradient(circle,var(--ink) 1.2px,transparent 1.4px) 0 0/7px 7px;display:grid;grid-template-columns:1.05fr .95fr;gap:24px;padding:52px 34px 280px}
+.hero:before{content:"";position:absolute;width:820px;height:820px;background:var(--paper);border:6px solid var(--ink);border-radius:50%;left:-330px;top:-300px}
+.hero-copy{position:relative;z-index:3;min-width:0}
+.issue{display:inline-block;background:var(--ink);color:var(--white);padding:4px 12px;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+.hero h1{margin:20px 0 0;font:400 82px/.86 "Bangers",Impact,sans-serif;letter-spacing:3px;text-transform:uppercase;color:var(--white);-webkit-text-stroke:7px var(--ink);paint-order:stroke fill;transform:rotate(-2deg)}
+.hero h1 .jp{display:block;width:max-content;max-width:100%;color:var(--ink);-webkit-text-stroke:0;background:var(--white);border:3px solid var(--ink);padding:4px 10px 2px;margin:12px 0 0 50px;font:400 20px "Anton",Impact,sans-serif;letter-spacing:2px}
+.hero-lead{max-width:470px;margin:26px 0 22px;font-size:19px;background:var(--paper);padding:14px 18px}
+.hero-lead strong{background:var(--ink);color:var(--white);padding:0 5px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.install{display:flex;align-items:center;gap:10px;margin-top:20px;background:var(--white);border:3px solid var(--ink);padding:7px 8px 7px 14px;width:max-content;max-width:100%;font-size:14px}
+.install code{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.install button{border:0;background:var(--ink);color:var(--white);cursor:pointer;font:700 11px "Barlow Condensed",sans-serif;letter-spacing:2px;text-transform:uppercase;padding:5px 9px}
+.install button[disabled]{opacity:.4;cursor:not-allowed}
+.eaten{display:inline-flex;align-items:baseline;gap:8px;margin:16px 0 0;background:var(--ink);color:var(--white);padding:5px 12px}
+.eaten b{font:400 26px/1 "Anton",sans-serif;min-width:1.2em}
+.eaten span{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.term-wrap{position:relative;z-index:3;align-self:center}
+.term{background:var(--ink);color:#eaeae4;border:4px solid var(--ink);box-shadow:10px 10px 0 var(--white),10px 10px 0 4px var(--ink);transform:rotate(1.5deg)}
+.term-bar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:var(--white);border-bottom:4px solid var(--ink);color:var(--ink)}
+.term-bar i{width:12px;height:12px;border:2.5px solid var(--ink);border-radius:50%;display:block}
+.term-bar i:first-child{background:var(--ink)}
+.term-bar span{margin-left:auto;font:700 11px "Barlow Condensed";letter-spacing:2px;text-transform:uppercase}
+.term pre{margin:0;padding:18px 18px 22px;min-height:280px;font:13px/1.75 "JetBrains Mono",monospace;white-space:pre-wrap}
+.term .ok{background:#eaeae4;color:var(--ink);padding:0 4px;font-weight:700}
+.term .dim{color:#8a8a85}
+.cursor{display:inline-block;width:9px;height:16px;background:#eaeae4;vertical-align:-3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.bubble{position:absolute;z-index:4;right:-6px;top:-44px;background:var(--white);border:3px solid var(--ink);border-radius:50%;padding:16px 22px;font:400 22px/1 "Bangers",sans-serif;letter-spacing:1px;transform:rotate(4deg)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:3px solid var(--ink);background:var(--white)}
+.home-stats{border-width:0 0 4px}
+.stat{padding:18px 20px;border-right:3px solid var(--ink);position:relative}
+.stat:last-child{border-right:0}
+.stat b{display:block;font:400 42px/1 "Anton",sans-serif}
+.stat span{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+
+/* BREAK */
+.break{height:84px;position:relative;margin:14px 0;overflow:hidden;border:3px solid var(--ink);background:repeating-linear-gradient(-12deg,var(--white) 0,var(--white) 7px,var(--ink) 8px,var(--ink) 9px)}
+.break span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-2deg);white-space:nowrap;background:var(--white);border:3px solid var(--ink);padding:4px 22px;font:400 32px "Bangers",sans-serif;letter-spacing:2px}
+
+/* SECTION TITLES + CARDS */
+.section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:6px 4px 14px}
+.section-title h2{margin:0;font:400 48px/.9 "Bangers",Impact,sans-serif;letter-spacing:2px;text-transform:uppercase}
+.section-title p{margin:0;max-width:360px;font-size:15px;text-align:right}
+.features{display:grid;grid-template-columns:1.05fr .95fr;gap:12px;grid-template-areas:"one one" "two three"}
+.card{position:relative;overflow:hidden;border:3px solid var(--ink);background:var(--white)}
+.card-one{grid-area:one;display:grid;grid-template-columns:56% 44%;min-height:320px}
+.card-two{grid-area:two}.card-three{grid-area:three}
+.art{position:relative;overflow:hidden;background:var(--paper);display:grid;place-items:center}
+.card-one .art{border-right:4px solid var(--ink)}
+.card-two .art,.card-three .art{height:230px;border-bottom:4px solid var(--ink)}
+.art:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,rgba(0,0,0,.3) .8px,transparent 1px) 0 0/4px 4px;opacity:.25}
+.scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+.num{position:absolute;z-index:4;left:10px;top:10px;width:42px;height:42px;background:var(--ink);color:var(--white);display:grid;place-items:center;font:400 20px "Anton",sans-serif;transform:rotate(-5deg)}
+.sfx{position:absolute;z-index:4;right:8px;bottom:-8px;font:900 40px sans-serif;letter-spacing:-6px;transform:rotate(-8deg);color:var(--white);-webkit-text-stroke:2px var(--ink)}
+.art-tag{position:absolute;z-index:4;top:12px;right:12px;background:var(--white);border:3px solid var(--ink);padding:6px 11px 5px;font:400 22px/1 "Anton",sans-serif;transform:rotate(3deg);box-shadow:4px 4px 0 var(--ink)}
+.art-tag small{display:block;font:700 10px "Barlow Condensed",sans-serif;letter-spacing:2px;margin-top:4px}
+.card-three .num{background:var(--paper);color:var(--ink)}
+.card-three .art-tag{box-shadow:4px 4px 0 var(--paper)}
+.info{padding:18px 18px 20px}
+.info h3{margin:0 0 2px;font:400 30px/.95 "Bangers",sans-serif;letter-spacing:1px;text-transform:uppercase}
+.role{display:inline-block;background:var(--ink);color:var(--white);padding:2px 8px;margin:4px 0 12px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.info p{margin:0}
+.facts{margin-top:13px;padding-top:10px;border-top:2px dashed var(--ink);font-size:14px}
+.facts b{text-transform:uppercase;letter-spacing:1px}
+
+/* STORY / STEPS */
+.story{margin-top:26px;padding:30px 26px 26px;position:relative;background:radial-gradient(circle at 90% 15%,#ddd 1px,transparent 1.4px) 0 0/6px 6px}
+.story:before{content:"HOW IT WORKS";position:absolute;right:14px;top:-20px;z-index:7;background:var(--ink);color:var(--white);padding:3px 13px;font:400 18px "Anton",sans-serif;letter-spacing:2px;transform:rotate(2deg)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.step{background:var(--white);padding:16px;position:relative}
+.step-n{font:400 64px/.8 "Anton",sans-serif;color:var(--grey);position:absolute;right:10px;top:8px}
+.step h4{margin:0 0 8px;font:400 24px "Bangers",sans-serif;letter-spacing:1px;position:relative}
+.step p{margin:0 0 12px;position:relative}
+.step code{display:block;background:var(--ink);color:#eaeae4;padding:8px 10px;font:12px "JetBrains Mono",monospace;overflow-x:auto;white-space:nowrap}
+.story-note{margin:20px 0 0;max-width:640px;text-align:justify}
+.story-note b{background:var(--ink);color:var(--white);padding:0 4px}
+.story-note u{text-decoration-style:wavy;text-underline-offset:3px}
+.story-note s{text-decoration-thickness:2px}
+.story-note mark{background:repeating-linear-gradient(-45deg,transparent 0,transparent 2px,#ccc 2px,#ccc 4px);font-weight:700;padding:0 4px;color:inherit}
+
+/* MOVES (three plan cards) */
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.plan{background:var(--white);padding:22px 20px;position:relative;display:flex;flex-direction:column}
+.plan h3{margin:0;font:400 28px "Bangers",sans-serif;letter-spacing:1px}
+.price{font:400 52px/1 "Anton",sans-serif;margin:10px 0 2px;text-transform:uppercase}
+.price small{font:600 16px "Barlow Condensed";letter-spacing:1px}
+.plan ul{list-style:none;padding:0;margin:14px 0 20px;flex:1}
+.plan li{padding:5px 0;border-bottom:2px dashed var(--grey)}
+.plan li:before{content:"▶ ";font-size:11px}
+.plan .btn{text-align:center}
+.plan-hot{background:var(--ink);color:var(--white);transform:rotate(-1deg)}
+.plan-hot li{border-color:#444}
+.plan-hot .btn{background:var(--white);color:var(--ink);border-color:var(--white);box-shadow:4px 4px 0 #555}
+.hot-tag{position:absolute;top:-16px;right:14px;z-index:7;background:var(--white);color:var(--ink);border:3px solid var(--ink);padding:2px 10px;font:400 16px "Bangers";letter-spacing:2px;transform:rotate(4deg)}
+
+/* FAQ */
+.faq{margin-top:6px}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.faq-item{position:relative;background:var(--white)}
+.faq-item:after{content:"";position:absolute;inset:0;border:3px solid var(--ink);filter:url(#sketchy);pointer-events:none}
+.faq-item summary{list-style:none;display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary:focus-visible{outline:3px dashed var(--ink);outline-offset:-8px}
+.faq-q{flex:none;background:var(--ink);color:var(--white);font:400 15px/1 "Anton",sans-serif;letter-spacing:1px;padding:6px 8px;transform:rotate(-4deg);filter:url(#sketchy-sm)}
+.faq-text{flex:1;font:400 23px/1.05 "Bangers",sans-serif;letter-spacing:1px}
+.faq-item summary:hover .faq-text{text-decoration:underline wavy;text-underline-offset:5px;text-decoration-thickness:1.5px}
+.faq-icon{flex:none;width:32px;height:32px;border:3px solid var(--ink);border-radius:50%;position:relative;transition:transform .35s cubic-bezier(.16,1,.3,1),background .2s}
+.faq-icon:before,.faq-icon:after{content:"";position:absolute;left:50%;top:50%;width:12px;height:3px;background:var(--ink);transform:translate(-50%,-50%);transition:transform .35s cubic-bezier(.16,1,.3,1),background .2s}
+.faq-icon:after{transform:translate(-50%,-50%) rotate(90deg)}
+.faq-item[open] .faq-icon{background:var(--ink);transform:rotate(180deg)}
+.faq-item[open] .faq-icon:before,.faq-item[open] .faq-icon:after{background:var(--white)}
+.faq-item[open] .faq-icon:after{transform:translate(-50%,-50%) rotate(0deg)}
+.faq-item[open] summary{border-bottom:2px dashed var(--ink)}
+.faq-a{padding:16px 18px 20px}
+.faq-item[open] .faq-a{animation:faqIn .4s cubic-bezier(.16,1,.3,1)}
+@keyframes faqIn{from{opacity:0;translate:0 -6px}to{opacity:1;translate:0 0}}
+.faq-a p{margin:0;padding-left:14px;border-left:4px solid var(--ink)}
+.faq-a code{font:13px "JetBrains Mono",monospace;background:var(--ink);color:var(--white);padding:1px 6px}
+
+/* END PANEL */
+.end{margin-top:26px;position:relative;overflow:hidden;background:var(--ink);color:var(--white);border:3px solid var(--ink)}
+.end:before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-radial-gradient(circle at 0 0,transparent 0 26px,rgba(255,255,255,.05) 26px 28px)}
+.end:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.09) 1px,transparent 1.3px) 0 0/7px 7px;-webkit-mask:linear-gradient(200deg,transparent 45%,#000);mask:linear-gradient(200deg,transparent 45%,#000)}
+.end-inner{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);min-height:470px}
+.end-copy{padding:50px 20px 46px 46px;display:flex;flex-direction:column;justify-content:center}
+.end-kicker{align-self:flex-start;border:2px solid var(--white);padding:4px 11px;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+.end-title{margin:20px 0 0;font:400 84px/.86 "Bangers",sans-serif;letter-spacing:3px;text-transform:uppercase;color:var(--paper);text-shadow:5px 5px 0 #3d3d3d;transform:rotate(-2deg);transform-origin:left}
+.end-sub{align-self:flex-start;margin:18px 0 0 34px;background:var(--paper);color:var(--ink);padding:5px 12px 3px;font:400 21px "Anton",sans-serif;letter-spacing:1.5px;text-transform:uppercase;transform:rotate(-1.5deg)}
+.end-lead{max-width:430px;margin:24px 0 22px;font-size:19px;color:#cfcfca}
+.end-ctas{display:flex;flex-wrap:wrap;gap:14px}
+.end .btn{background:var(--paper);color:var(--ink);border-color:var(--paper);box-shadow:5px 5px 0 #3d3d3d}
+.end .btn-ghost{background:transparent;color:var(--paper);box-shadow:5px 5px 0 #3d3d3d}
+.end-perks{list-style:none;display:flex;flex-wrap:wrap;gap:8px 22px;padding:0;margin:22px 0 0;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#cfcfca}
+.end-perks li:before{content:"✓";display:inline-block;margin-right:7px;color:var(--paper)}
+.end-art{position:relative;min-height:380px;border-left:3px solid #2c2c2c;overflow:hidden}
+.end-art svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.end-chip{position:absolute;z-index:3;left:50%;bottom:30px;transform:translateX(-50%) rotate(-2deg);background:var(--paper);color:var(--ink);border:3px solid var(--paper);box-shadow:6px 6px 0 #3d3d3d;padding:9px 14px;font:12px/1.6 "JetBrains Mono",monospace;white-space:nowrap;animation:chipFloat 4s ease-in-out infinite}
+.end-chip b{background:var(--ink);color:var(--paper);padding:0 5px;margin-right:6px}
+.end-chip .dim{color:#8a8a85}
+@keyframes chipFloat{50%{translate:0 -7px}}
+
+/* PAGE CHROME */
+.pg-head{padding:26px 14px 4px}
+.pg-head h1{margin:0;font:400 58px/.9 "Bangers",Impact,sans-serif;letter-spacing:2px;text-transform:uppercase}
+.pg-head p{margin:10px 0 0;font-size:19px;max-width:640px}
+.rules{margin:14px 0;background:var(--ink);color:var(--white);padding:10px 16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:13px}
+.stepstrip{list-style:none;display:flex;gap:10px;margin:16px 0;padding:0}
+.stepstrip li{flex:1;border:3px solid var(--ink);background:var(--white);padding:10px 12px;font:400 22px "Bangers",sans-serif;letter-spacing:1px;display:flex;gap:10px;align-items:center;opacity:.5;transition:opacity .2s,background .2s}
+.stepstrip li b{display:grid;place-items:center;width:30px;height:30px;background:var(--ink);color:var(--white);font:400 16px "Anton",sans-serif;transform:rotate(-5deg)}
+.stepstrip li.on{opacity:1;background:var(--paper);box-shadow:4px 4px 0 var(--ink)}
+.stepstrip li.done{opacity:1;background:var(--ink);color:var(--white)}
+.stepstrip li.done b{background:var(--white);color:var(--ink)}
+.lookup{display:flex;align-items:stretch;background:var(--white);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink)}
+.lookup .prompt{display:grid;place-items:center;padding:0 14px;background:var(--ink);color:var(--paper);font-weight:700}
+.lookup input{flex:1;min-width:0;border:0;background:var(--white);color:var(--ink);padding:15px 14px;font:15px "JetBrains Mono",monospace;outline:none}
+.lookup .btn{border:0;box-shadow:none}
+.lookup .btn:hover{transform:none;box-shadow:none;background:#2c2c2c}
+.hint{margin:10px 2px 0;font-size:14px}
+.result,.prop,.box,.tile{position:relative;background:var(--white);padding:18px 20px;margin-top:16px}
+.result.idle{background:var(--paper);border-style:dashed}
+.result.idle b{font:400 26px "Bangers";letter-spacing:1px}
+.result.idle p{margin:6px 0 0}
+.res-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.coin{font:400 30px "Bangers";letter-spacing:1px}
+.coin small{font:700 14px "JetBrains Mono";letter-spacing:0;background:var(--ink);color:var(--white);padding:1px 6px;margin-left:6px}
+.sentence{font-size:21px;line-height:1.35;margin:12px 0 6px}
+.why{margin:0 0 14px;padding-left:14px;border-left:4px solid var(--ink)}
+.badge{display:inline-block;padding:4px 14px 2px;font:400 24px/1.1 "Bangers",sans-serif;letter-spacing:2px;border:3px solid var(--ink);filter:url(#sketchy-sm)}
+.badge.good{background:var(--ink);color:var(--white)}
+.badge.risky{background:repeating-linear-gradient(-45deg,var(--white) 0 5px,var(--grey) 5px 10px);color:var(--ink)}
+.badge.no{background:var(--white);color:var(--ink);text-decoration:line-through;text-decoration-thickness:3px}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);border:3px solid var(--ink);margin-top:10px}
+.nums div{padding:10px 14px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.nums div:nth-child(3n){border-right:0}
+.nums div:nth-last-child(-n+3){border-bottom:0}
+.nums b{display:block;font:400 26px/1.1 "Anton",sans-serif}
+.nums span{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.res-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:18px}
+.safe{margin:12px 0 0;font-size:14px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+.tile{margin:0;padding:14px 16px}
+.tile b{display:block;font:400 38px/1 "Anton",sans-serif}
+.tile span{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.box h3{margin:0 0 8px;font:400 28px "Bangers",sans-serif;letter-spacing:1px;text-transform:uppercase}
+.box ul{margin:0;padding-left:20px}
+.box li{margin:4px 0}
+.box.dark{background:var(--ink);color:var(--white)}
+.box.risk{background:repeating-linear-gradient(-45deg,var(--white) 0 8px,#efefeb 8px 16px)}
+.prop-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.prop h3{margin:0;font:400 28px/1 "Bangers",sans-serif;letter-spacing:1px}
+.prop h3 small{font:700 13px "JetBrains Mono";letter-spacing:0;background:var(--ink);color:var(--white);padding:1px 6px;margin-left:6px;vertical-align:3px}
+.mint{font-size:12px;color:#55554f}
+.prop-reason{margin:10px 0 12px}
+.vrow{display:grid;grid-template-columns:70px 1fr 120px;align-items:center;gap:10px;margin:6px 0;font-size:13px;font-weight:700;letter-spacing:1px}
+.vrow b{text-align:right;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:0}
+.bar{height:18px;border:3px solid var(--ink);background:var(--white);position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+.bar.no i{background:repeating-linear-gradient(-45deg,var(--ink) 0 3px,var(--white) 3px 6px)}
+.bar.q i{background:var(--mid)}
+.prop-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.tag{display:inline-block;background:var(--ink);color:var(--white);padding:3px 10px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.tag.out{background:var(--white);color:var(--ink);border:2px solid var(--ink)}
+.plist{display:grid;grid-template-columns:1fr;gap:0}
+.tabs{display:flex;gap:10px;margin:16px 0 4px}
+.tab{cursor:pointer;border:3px solid var(--ink);background:var(--white);padding:8px 18px;font:400 22px "Bangers";letter-spacing:1px}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--white)}
+.hist{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hist .prop{margin-top:12px}
+.empty{padding:26px;border:3px dashed var(--ink);margin-top:14px;text-align:center;font-size:19px}
+.share{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+.timeline{margin:10px 0 0;font-size:14px}
+
+/* MODAL + TOAST (above everything) */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(17,17,17,.62)}
+.modal.on{display:flex}
+.modal-box{position:relative;width:100%;max-width:440px;background:var(--white);border:4px solid var(--ink);box-shadow:10px 10px 0 var(--ink);padding:22px 22px 18px;max-height:92vh;overflow:auto}
+.modal-box h3{margin:0 0 4px;font:400 34px "Bangers";letter-spacing:2px;text-transform:uppercase}
+.modal-x{position:absolute;right:10px;top:10px;width:34px;height:34px;border:3px solid var(--ink);background:var(--white);font:400 18px "Anton";cursor:pointer}
+.wlist{list-style:none;margin:14px 0;padding:0;display:grid;gap:10px}
+.wbtn{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;background:var(--white);border:3px solid var(--ink);padding:11px 14px;font:400 22px "Bangers";letter-spacing:1px;box-shadow:4px 4px 0 var(--ink)}
+.wbtn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.wbtn em{font:700 11px "Barlow Condensed";letter-spacing:2px;text-transform:uppercase;font-style:normal;background:var(--ink);color:var(--white);padding:2px 8px}
+.wbtn em.inst{background:var(--white);color:var(--ink);border:2px solid var(--ink)}
+.modal-note{margin:12px 0 0;font-size:14px;padding:10px 12px;background:var(--paper);border-left:4px solid var(--ink)}
+.acct{font:13px "JetBrains Mono";word-break:break-all;background:var(--paper);border:2px solid var(--ink);padding:8px 10px;margin:12px 0}
+.toast{position:fixed;z-index:110;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;pointer-events:none;max-width:min(560px,92vw);background:var(--ink);color:var(--white);border:3px solid var(--white);outline:3px solid var(--ink);padding:11px 18px;font-weight:700;letter-spacing:1px;transition:opacity .25s,transform .25s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:var(--white);color:var(--ink);border-color:var(--ink);outline-color:var(--white)}
+
+/* FOOTER */
+.foot{position:relative;z-index:5;padding:14px 18px;display:grid;gap:10px;border-top:4px solid var(--ink);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--white)}
+.foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+.foot nav{display:flex;flex-wrap:wrap;gap:16px}
+.foot a{text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.foot .risk{font-weight:600;letter-spacing:.5px;text-transform:none;font-size:13px;color:#33332f;max-width:860px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.plan-hot a:focus-visible,.end a:focus-visible{outline-color:var(--white)}
+
+/* SKETCH LAYER: wobbly outlines are overlays so text stays crisp */
+.card,.plan,.step,.break,.story,.result,.prop,.box,.tile,.nums,.lookup,.empty,.stats:not(.home-stats){border:0}
+.term{border:0;position:relative}
+.card:after,.plan:after,.step:after,.break:after,.story:after,.term:after,.result:after,.prop:after,.box:after,.tile:after,.stats:not(.home-stats):after{content:"";position:absolute;inset:0;z-index:6;pointer-events:none;border:3px solid var(--ink);filter:url(#sketchy)}
+.term:after{border-width:4px}
+.result.idle:after{border-style:dashed}
+.stats:not(.home-stats){position:relative}
+.btn,.issue,.num,.hot-tag,.bubble,.break span,.role,.install,.stat b,.step-n,.end-kicker,.end-sub,.hero h1 .jp,.art-tag,.tab,.stepstrip li,.eaten{filter:url(#sketchy-sm)}
+.hero:before{filter:url(#sketchy)}
+
+/* HERO SCENE */
+.hero:after{display:none}
+.hero-copy>*{animation:rise .9s cubic-bezier(.16,1,.3,1) both}
+.hero-copy>*:nth-child(2){animation-delay:.08s}.hero-copy>*:nth-child(3){animation-delay:.16s}.hero-copy>*:nth-child(4){animation-delay:.24s}.hero-copy>*:nth-child(5){animation-delay:.32s}.hero-copy>*:nth-child(6){animation-delay:.4s}
+.term-wrap{animation:rise 1.1s .35s cubic-bezier(.16,1,.3,1) both}
+@keyframes rise{from{opacity:0;translate:0 26px}to{opacity:1;translate:0 0}}
+.hero-sun{position:absolute;z-index:1;pointer-events:none;left:71%;bottom:130px;width:680px;aspect-ratio:1;transform:translate(-50%,50%);animation:sunrise 2.8s cubic-bezier(.16,1,.3,1) both}
+.hero-sun svg{width:100%;height:100%;overflow:visible;display:block}
+@keyframes sunrise{from{transform:translate(-50%,100%)}to{transform:translate(-50%,50%)}}
+.hero-horizon{position:absolute;left:0;right:0;bottom:0;height:240px;z-index:2;pointer-events:none}
+.skyline{position:absolute;left:0;bottom:126px;width:100%;height:110px;display:block}
+.floor{position:absolute;left:0;right:0;bottom:0;height:130px;background:var(--paper);border-top:4px solid var(--ink);overflow:hidden;perspective:200px;perspective-origin:70% 0}
+.floor-plane{position:absolute;left:-100%;right:-100%;top:0;height:420%;transform-origin:50% 0;transform:rotateX(72deg);background-image:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 72px),repeating-linear-gradient(0deg,var(--ink) 0 2px,transparent 2px 72px);animation:floor 1.5s linear infinite}
+@keyframes floor{from{background-position:0 0,0 0}to{background-position:0 0,0 72px}}
+.floor:after{content:"";position:absolute;inset:0;background:linear-gradient(var(--paper),rgba(248,248,245,0) 55%)}
+.blink{animation:blink2 2.6s steps(1) infinite}
+@keyframes blink2{50%{opacity:0}}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);padding:40px 22px 260px}
+  .hero h1{font-size:64px}
+  .term-wrap{margin-top:40px}
+  .hero-sun{left:50%;width:600px}
+  .floor{perspective-origin:50% 0}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(2){border-right:0}
+  .stat:nth-child(-n+2){border-bottom:3px solid var(--ink)}
+  .steps,.pricing,.faq-grid,.cols,.hist{grid-template-columns:1fr}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .end-inner{grid-template-columns:minmax(0,1fr)}
+  .end-copy{padding:40px 24px 24px}
+  .end-art{min-height:320px;border-left:0;border-top:3px solid #2c2c2c}
+  .plan-hot{transform:none}
+}
+@media(max-width:640px){
+  .page{margin:0;border-width:0 0 4px;box-shadow:none}
+  .nav{flex-wrap:wrap;padding:10px 14px}
+  .nav ul{order:3;width:100%;justify-content:space-between;gap:6px}
+  .nav ul a{font-size:13px;letter-spacing:1px}
+  .hero{padding-bottom:230px}
+  .hero h1{font-size:50px;-webkit-text-stroke:5px var(--ink)}
+  .hero h1 .jp{margin-left:16px;font-size:16px}
+  .hero-sun{width:470px;bottom:110px}
+  .floor{height:110px}
+  .skyline{bottom:106px;height:90px}
+  .bubble{right:0;top:-40px;font-size:16px;padding:12px 16px}
+  .section-title{flex-direction:column;align-items:flex-start}
+  .section-title p{text-align:left}
+  .section-title h2{font-size:40px}
+  .pg-head h1{font-size:44px}
+  .features{grid-template-columns:1fr;grid-template-areas:"one" "two" "three"}
+  .card-one{grid-template-columns:1fr}
+  .card-one .art{height:260px;border-right:0;border-bottom:4px solid var(--ink)}
+  .break span{font-size:22px;padding:3px 14px}
+  .end-title{font-size:50px}
+  .end-sub{margin-left:12px;font-size:17px}
+  .faq-text{font-size:20px}
+  .stepstrip{flex-direction:column;gap:6px}
+  .lookup{flex-wrap:wrap}.lookup input{flex-basis:calc(100% - 44px)}.lookup .btn{width:100%;padding:13px 0}
+  .nums{grid-template-columns:repeat(2,1fr)}
+  .nums div:nth-child(3n){border-right:2px solid var(--ink)}.nums div:nth-child(2n){border-right:0}
+  .nums div:nth-last-child(-n+3){border-bottom:2px solid var(--ink)}.nums div:nth-last-child(-n+1){border-bottom:0}
+  .vrow{grid-template-columns:58px 1fr 92px}
+  .install{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .cursor,.hero-sun,.floor-plane,.blink,.hero-copy>*,.term-wrap,.end-chip,.faq-a{animation:none!important}
+  .btn,.toast{transition:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <filter id="sketchy" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="turbulence" baseFrequency="0.035 0.042" numOctaves="4" result="noise" seed="42"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="sketchy-sm" x="-18%" y="-18%" width="136%" height="136%">
+      <feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="3" result="noise" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="page">
+
+  <!-- TOP BAR -->
+  <header class="nav">
+    <a class="logo" href="#/" aria-label="GULP home">
+      <img class="logo-mark" src="data:image/png;base64,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" width="46" height="46" alt="">GULP
+    </a>
+    <ul>
+      <li><a href="#/main-tool" data-nav="main-tool">Nominate</a></li>
+      <li><a href="#/vote" data-nav="vote">Vote</a></li>
+      <li><a href="#/how" data-nav="how">How</a></li>
+      <li><a href="#/board" data-nav="board">Ledger</a></li>
+    </ul>
+    <button class="btn" type="button" id="walletBtn" data-act="wallet-open">Connect wallet</button>
+  </header>
+
+  <!-- ================= HOME ================= -->
+  <main>
+  <div class="view on" id="view-home">
+    <section class="hero" id="top">
+      <div class="hero-sun" aria-hidden="true">
+        <svg viewBox="0 0 640 640" id="heroSunSvg">
+          <circle cx="320" cy="320" r="276" fill="#f8f8f5" stroke="#111" stroke-width="3"/>
+          <circle cx="320" cy="320" r="276" fill="none" stroke="#111" stroke-width="2">
+            <animate attributeName="r" values="276;380" dur="6s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".9;0" dur="6s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="320" cy="320" r="276" fill="none" stroke="#111" stroke-width="2">
+            <animate attributeName="r" values="276;380" dur="6s" begin="-3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".9;0" dur="6s" begin="-3s" repeatCount="indefinite"/>
+          </circle>
+          <g data-sun data-cx="320" data-cy="320" data-r="252" data-bars="8" data-dur="9" data-stroke="4" data-start=".04" data-end=".5"></g>
+          <g id="feedLayer"></g>
+        </svg>
+      </div>
+      <div class="hero-horizon" aria-hidden="true">
+        <svg class="skyline" viewBox="0 0 1200 110" preserveAspectRatio="xMidYMax slice">
+          <g data-skyline data-w="1200" data-base="110" data-min="24" data-max="100" data-seed="23" data-dip="0.7"></g>
+        </svg>
+        <div class="floor"><div class="floor-plane"></div></div>
+      </div>
+      <div class="hero-copy">
+        <div class="issue">Vol. 01 · Chapter 1 · Solana</div>
+        <h1>
+          Dead coins<br>get gulped!
+          <span class="jp">死んだコインは、太陽が食べる</span>
+        </h1>
+        <p class="hero-lead">
+          Paste any quiet Solana coin, see in seconds if it qualifies to be <strong>absorbed</strong>, and vote on it with your wallet.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn" href="#/main-tool">Nominate a coin</a>
+          <a class="btn btn-ghost" href="#/how">How it works</a>
+        </div>
+        <div class="install mono">
+          <span aria-hidden="true">CA</span>
+          <code id="caText">Contract address drops at launch</code>
+          <button type="button" id="copyBtn" data-act="copy-ca" aria-label="Copy contract address" disabled>Soon</button>
+        </div>
+        <div class="eaten" aria-live="off"><b id="eatenN">0</b><span>suns swallowed this visit · click anywhere to feed it</span></div>
+      </div>
+      <div class="term-wrap">
+        <div class="bubble" aria-hidden="true">GULP!</div>
+        <div class="term" role="img" aria-label="Terminal animation: a coin is checked, voted on and absorbed">
+          <div class="term-bar"><i></i><i></i><i></i><span>gulp — ledger</span></div>
+          <pre id="term" aria-hidden="true"></pre>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats home-stats" id="homeStats"></div>
+
+    <div class="wrap">
+      <div class="break"><span>3 signs of a dead coin</span></div>
+
+      <section id="features">
+        <div class="section-title">
+          <h2>The tell-tale signs</h2>
+          <p>Every nomination is checked against the same three signs. No vibes, only numbers from the live pool.</p>
+        </div>
+        <div class="features">
+
+          <article class="card card-one">
+            <div class="art">
+              <svg class="scene" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect width="400" height="260" fill="#f8f8f5"/>
+                <line x1="40" y1="200" x2="360" y2="200" stroke="#111" stroke-width="3"/>
+                <g fill="#111">
+                  <rect x="60" y="80" width="26" height="120"><animate attributeName="height" values="120;120;6;6;120" keyTimes="0;.1;.4;.9;1" dur="6s" repeatCount="indefinite"/><animate attributeName="y" values="80;80;194;194;80" keyTimes="0;.1;.4;.9;1" dur="6s" repeatCount="indefinite"/></rect>
+                  <rect x="102" y="104" width="26" height="96"><animate attributeName="height" values="96;96;6;6;96" keyTimes="0;.16;.46;.9;1" dur="6s" repeatCount="indefinite"/><animate attributeName="y" values="104;104;194;194;104" keyTimes="0;.16;.46;.9;1" dur="6s" repeatCount="indefinite"/></rect>
+                  <rect x="144" y="60" width="26" height="140"><animate attributeName="height" values="140;140;6;6;140" keyTimes="0;.22;.52;.9;1" dur="6s" repeatCount="indefinite"/><animate attributeName="y" values="60;60;194;194;60" keyTimes="0;.22;.52;.9;1" dur="6s" repeatCount="indefinite"/></rect>
+                  <rect x="186" y="116" width="26" height="84"><animate attributeName="height" values="84;84;6;6;84" keyTimes="0;.28;.58;.9;1" dur="6s" repeatCount="indefinite"/><animate attributeName="y" values="116;116;194;194;116" keyTimes="0;.28;.58;.9;1" dur="6s" repeatCount="indefinite"/></rect>
+                  <rect x="228" y="90" width="26" height="110"><animate attributeName="height" values="110;110;6;6;110" keyTimes="0;.34;.64;.9;1" dur="6s" repeatCount="indefinite"/><animate attributeName="y" values="90;90;194;194;90" keyTimes="0;.34;.64;.9;1" dur="6s" repeatCount="indefinite"/></rect>
+                  <rect x="270" y="124" width="26" height="76"><animate attributeName="height" values="76;76;6;6;76" keyTimes="0;.4;.7;.9;1" dur="6s" repeatCount="indefinite"/><animate attributeName="y" values="124;124;194;194;124" keyTimes="0;.4;.7;.9;1" dur="6s" repeatCount="indefinite"/></rect>
+                  <rect x="312" y="100" width="26" height="100"><animate attributeName="height" values="100;100;6;6;100" keyTimes="0;.46;.76;.9;1" dur="6s" repeatCount="indefinite"/><animate attributeName="y" values="100;100;194;194;100" keyTimes="0;.46;.76;.9;1" dur="6s" repeatCount="indefinite"/></rect>
+                </g>
+                <text x="64" y="44" font-family="Bangers, Impact, sans-serif" font-size="22" letter-spacing="2" fill="#111">24H VOLUME</text>
+                <g transform="translate(0 182)">
+                  <g><circle r="15" fill="#f8f8f5" stroke="#111" stroke-width="3"/><path d="M-15 0Q-5 -9 0 0T15 0M-9 -9Q0 -3 9 -9M-9 8Q0 2 9 8" fill="none" stroke="#111" stroke-width="2"/>
+                    <animateTransform attributeName="transform" type="rotate" values="0;720" dur="7s" repeatCount="indefinite"/></g>
+                  <animateTransform attributeName="transform" type="translate" values="-30 182;430 182" dur="7s" repeatCount="indefinite"/>
+                </g>
+                <rect y="232" width="400" height="40" fill="#111"/>
+              </svg>
+              <div class="art-tag">$0<small>volume · 24 hours</small></div>
+              <div class="num">01</div>
+              <div class="sfx">シーン</div>
+            </div>
+            <div class="info">
+              <h3>The Ghost Town</h3>
+              <div class="role">sign · nobody is trading</div>
+              <p>
+                A living coin has trades every hour. A dead one has tumbleweeds.
+                If nearly nothing changed hands in the last 24 hours, the first sign is lit.
+              </p>
+              <div class="facts">
+                <b>Checks:</b> 24-hour volume<br>
+                <b>Clean fit:</b> under <span data-rule="goodMaxVolume24hUsd" data-fmt="usd"></span><br>
+                <b>Too alive:</b> over <span data-rule="riskyMaxVolume24hUsd" data-fmt="usd"></span><br>
+                <b>Source:</b> DexScreener
+              </div>
+            </div>
+          </article>
+
+          <article class="card card-two">
+            <div class="art">
+              <svg class="scene" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect width="400" height="260" fill="#f8f8f5"/>
+                <defs><clipPath id="tankClip"><rect x="130" y="50" width="140" height="150"/></clipPath></defs>
+                <g clip-path="url(#tankClip)">
+                  <g>
+                    <rect x="120" y="70" width="160" height="160" fill="#111"/>
+                    <path d="M120 70Q140 58 160 70T200 70T240 70T280 70V80H120Z" fill="#111"/>
+                    <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 120;0 120;0 0" keyTimes="0;.1;.7;.92;1" dur="6s" repeatCount="indefinite"/>
+                  </g>
+                </g>
+                <rect x="130" y="50" width="140" height="150" fill="none" stroke="#111" stroke-width="5"/>
+                <rect x="186" y="200" width="28" height="30" fill="#f8f8f5" stroke="#111" stroke-width="4"/>
+                <path d="M200 236V250" stroke="#111" stroke-width="4" stroke-dasharray="4 6"><animate attributeName="stroke-dashoffset" values="0;-20" dur=".5s" repeatCount="indefinite"/></path>
+                <g stroke="#111" stroke-width="3" stroke-linecap="round"><line x1="130" y1="90" x2="146" y2="90"/><line x1="130" y1="130" x2="146" y2="130"/><line x1="130" y1="170" x2="146" y2="170"/></g>
+                <text x="16" y="244" font-family="Bangers, Impact, sans-serif" font-size="20" letter-spacing="2" fill="#111">LIQUIDITY</text>
+                <g opacity="0" transform="translate(238 138) rotate(-6)">
+                  <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.66;.7;.9;.94;1" dur="6s" repeatCount="indefinite"/>
+                  <rect width="120" height="34" fill="#f8f8f5" stroke="#111" stroke-width="3"/>
+                  <text x="60" y="25" text-anchor="middle" font-family="Bangers, Impact, sans-serif" font-size="22" letter-spacing="2" fill="#111">DRAINED</text>
+                </g>
+              </svg>
+              <div class="art-tag">DRY<small>liquidity pool</small></div>
+              <div class="num">02</div>
+              <div class="sfx">ズズズ</div>
+            </div>
+            <div class="info">
+              <h3>The Dry Pool</h3>
+              <div class="role">sign · the water is gone</div>
+              <p>
+                Liquidity is the water in the pool. When it drains, nobody can
+                sell in or out. We read it straight from the live pair.
+              </p>
+              <div class="facts">
+                <b>Checks:</b> pool liquidity<br>
+                <b>Clean fit:</b> under <span data-rule="goodMaxLiquidityUsd" data-fmt="usd"></span><br>
+                <b>Too alive:</b> over <span data-rule="riskyMaxLiquidityUsd" data-fmt="usd"></span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card card-three">
+            <div class="art">
+              <svg class="scene" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect width="400" height="260" fill="#111"/>
+                <path transform="translate(300 30)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2s" begin="0s" repeatCount="indefinite"/></path><path transform="translate(110 58)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2s" begin="-0.5s" repeatCount="indefinite"/></path><path transform="translate(150 22)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2s" begin="-1.1s" repeatCount="indefinite"/></path><path transform="translate(372 120)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2s" begin="-1.4s" repeatCount="indefinite"/></path><path transform="translate(220 84)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2s" begin="-0.8s" repeatCount="indefinite"/></path>
+                <g data-sun data-cx="320" data-cy="84" data-r="30" data-bars="5" data-start=".35" data-dur="7" data-invert="1" data-stroke="2"></g>
+                <path d="M-10 134H60L72 134L82 108L92 156L102 134H410" fill="none" stroke="#f8f8f5" stroke-width="3" stroke-linejoin="round" stroke-dasharray="640" stroke-dashoffset="640">
+                  <animate attributeName="stroke-dashoffset" values="640;0;0;-640" keyTimes="0;.45;.8;1" dur="4.5s" repeatCount="indefinite"/>
+                </path>
+                <g font-family="Bangers, Impact, sans-serif" fill="#f8f8f5" opacity="0">
+                  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.4;.5;.9;1" dur="4.5s" repeatCount="indefinite"/>
+                  <text x="260" y="116" font-size="30">Z</text><text x="284" y="96" font-size="22">z</text><text x="302" y="80" font-size="16">z</text>
+                </g>
+                <g data-skyline data-w="400" data-base="262" data-min="56" data-max="118" data-seed="9" data-mode="night"></g>
+              </svg>
+              <div class="art-tag">7d+<small>fast asleep</small></div>
+              <div class="num">03</div>
+              <div class="sfx">スヤァ</div>
+            </div>
+            <div class="info">
+              <h3>The Long Sleep</h3>
+              <div class="role">sign · quiet for a while</div>
+              <p>
+                A brand-new coin is not dead, it is just early. The pool has to be
+                old enough that silence means something.
+              </p>
+              <div class="facts">
+                <b>Checks:</b> pool age<br>
+                <b>Minimum:</b> <span data-rule="minAgeDays"></span> days<br>
+                <b>Younger?</b> Not allowed
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section class="story" id="how" aria-label="How it works">
+        <div class="steps">
+          <div class="step">
+            <span class="step-n">01</span>
+            <h4>Paste</h4>
+            <p>Drop in a Solana coin address. We pull the live pool.</p>
+            <code>paste  &lt;coin address&gt;</code>
+          </div>
+          <div class="step">
+            <span class="step-n">02</span>
+            <h4>Review</h4>
+            <p>A plain sentence, a verdict badge and the numbers behind it.</p>
+            <code>verdict  good fit | risky | no</code>
+          </div>
+          <div class="step">
+            <span class="step-n">03</span>
+            <h4>Confirm</h4>
+            <p>Sign a message with your wallet. Holders then vote.</p>
+            <code>sign  message only, no funds</code>
+          </div>
+        </div>
+        <p class="story-note">
+          That's the whole story. No <s>seed phrases</s>, no <u>"approve all"</u> pop-ups.
+          The sun only ever asks for a <b>signature</b>, and a nomination that wins
+          its vote is <mark>recorded in the ledger</mark> as absorbed.
+        </p>
+      </section>
+
+      <div class="break"><span>Pick your move</span></div>
+
+      <section aria-label="Your move">
+        <div class="pricing">
+          <div class="plan">
+            <h3>Nominate</h3>
+            <div class="price">Paste</div>
+            <ul><li>Any Solana coin address</li><li>Live check in seconds</li><li>Verdict with the reason</li><li>One signature to confirm</li></ul>
+            <a class="btn btn-ghost" href="#/main-tool">Nominate a coin</a>
+          </div>
+          <div class="plan plan-hot">
+            <span class="hot-tag">Holders decide!</span>
+            <h3>Vote</h3>
+            <div class="price">Judge</div>
+            <ul><li>Open nominations, live bars</li><li>Weight = your $GULP balance</li><li>One vote per wallet</li><li>Quorum shown on every case</li></ul>
+            <a class="btn" href="#/vote">Open votes</a>
+          </div>
+          <div class="plan">
+            <h3>Ledger</h3>
+            <div class="price">Read</div>
+            <ul><li>Every absorbed coin</li><li>Every rejected case</li><li>Final tallies</li><li>A link for each case</li></ul>
+            <a class="btn btn-ghost" href="#/board">See the ledger</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="break"><span>Got questions?</span></div>
+      <section class="faq" id="faq">
+        <div class="section-title">
+          <h2>Reader mail</h2>
+          <p>Straight answers, including the uncomfortable ones.</p>
+        </div>
+        <div class="faq-grid">
+          <details class="faq-item" open>
+            <summary><span class="faq-q">Q.01</span><span class="faq-text">Does GULP ever move my funds?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+            <div class="faq-a"><p>No. GULP only asks your wallet to sign a text message. It never requests a transaction. If a pop-up ever asks you to approve a transaction, close it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-q">Q.02</span><span class="faq-text">What does "absorbed" mean?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+            <div class="faq-a"><p>When holders approve a nomination, the coin is marked absorbed in the public ledger. The team announces the next step for that coin's community on X.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-q">Q.03</span><span class="faq-text">Who can vote, and how much?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+            <div class="faq-a"><p>Any wallet that holds $GULP. Your weight is your on-chain balance, read from the Solana network. Before launch, each wallet counts as one vote.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-q">Q.04</span><span class="faq-text">Where do the numbers come from?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+            <div class="faq-a"><p>Liquidity, volume and pool age come from DexScreener. Supply and wallet balances come from the Solana network. Nothing is typed in by hand.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-q">Q.05</span><span class="faq-text">Are votes stored on-chain?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+            <div class="faq-a"><p>Not yet. Signed votes are kept in your browser, and mirrored to the team's server once one is connected. The signature proves which wallet cast it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-q">Q.06</span><span class="faq-text">Can a coin that still trades be nominated?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+            <div class="faq-a"><p>No. If it is too active or too young, the verdict says <code>Not allowed</code> and tells you why. Only quiet coins get a vote.</p></div>
+          </details>
+        </div>
+      </section>
+
+      <section class="end" id="signup">
+        <div class="end-inner">
+          <div class="end-copy">
+            <span class="end-kicker">Final panel · Your move</span>
+            <h2 class="end-title">To be<br>continued…</h2>
+            <p class="end-sub">Will the sun eat your coin?</p>
+            <p class="end-lead">Nominate a quiet coin or cast your first vote. It takes a minute and costs nothing.</p>
+            <div class="end-ctas">
+              <a class="btn" href="#/main-tool">Nominate a coin</a>
+              <a class="btn btn-ghost" href="https://x.com/" target="_blank" rel="noopener" data-x>Follow on X</a>
+            </div>
+            <ul class="end-perks"><li>No transactions</li><li>Signature only</li><li>Costs nothing</li></ul>
+          </div>
+          <div class="end-art" aria-hidden="true">
+            <svg viewBox="0 0 400 360" preserveAspectRatio="xMidYMax meet">
+              <path transform="translate(40 40)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2.2s" begin="0s" repeatCount="indefinite"/></path><path transform="translate(120 24)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2.2s" begin="-0.6s" repeatCount="indefinite"/></path><path transform="translate(300 34)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2.2s" begin="-1.2s" repeatCount="indefinite"/></path><path transform="translate(360 90)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2.2s" begin="-0.3s" repeatCount="indefinite"/></path><path transform="translate(70 120)" d="M0 -5V5M-5 0H5" stroke="#f8f8f5" stroke-width="1.6"><animate attributeName="opacity" values=".15;1;.15" dur="2.2s" begin="-1.6s" repeatCount="indefinite"/></path>
+              <g fill="none" stroke="#f8f8f5" stroke-width="2">
+                <circle cx="200" cy="250" r="146"><animate attributeName="r" values="146;230" dur="5s" repeatCount="indefinite"/><animate attributeName="opacity" values=".8;0" dur="5s" repeatCount="indefinite"/></circle>
+                <circle cx="200" cy="250" r="146"><animate attributeName="r" values="146;230" dur="5s" begin="-2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values=".8;0" dur="5s" begin="-2.5s" repeatCount="indefinite"/></circle>
+              </g>
+              <circle cx="200" cy="250" r="140" fill="none" stroke="#f8f8f5" stroke-width="2"/>
+              <g data-sun data-cx="200" data-cy="250" data-r="128" data-bars="7" data-dur="7" data-invert="1" data-stroke="3" data-start=".05" data-end=".5"></g>
+              <rect x="-600" y="250" width="1600" height="110" fill="#111"/>
+              <g stroke="#f8f8f5" stroke-width="1.4"><line x1="200" y1="250" x2="-500" y2="360"/><line x1="200" y1="250" x2="-220" y2="360"/><line x1="200" y1="250" x2="-20" y2="360"/><line x1="200" y1="250" x2="110" y2="360"/><line x1="200" y1="250" x2="200" y2="360"/><line x1="200" y1="250" x2="290" y2="360"/><line x1="200" y1="250" x2="420" y2="360"/><line x1="200" y1="250" x2="620" y2="360"/><line x1="200" y1="250" x2="900" y2="360"/></g>
+              <g stroke="#f8f8f5" stroke-width="1.8"><line x1="-600" x2="1000" y1="252" y2="252"><animate attributeName="y1" values="252;362" dur="1.8s" begin="0s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 1 1" repeatCount="indefinite"/><animate attributeName="y2" values="252;362" dur="1.8s" begin="0s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 1 1" repeatCount="indefinite"/></line><line x1="-600" x2="1000" y1="252" y2="252"><animate attributeName="y1" values="252;362" dur="1.8s" begin="-0.9s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 1 1" repeatCount="indefinite"/><animate attributeName="y2" values="252;362" dur="1.8s" begin="-0.9s" calcMode="spline" keyTimes="0;1" keySplines=".6 0 1 1" repeatCount="indefinite"/></line></g>
+              <line x1="-600" x2="1000" y1="250" y2="250" stroke="#f8f8f5" stroke-width="3"/>
+            </svg>
+            <div class="end-chip"><span class="dim">$</span> gulp check &lt;address&gt;<br><b>✓ ABSORBED</b>see the ledger</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ================= NOMINATE (main tool) ================= -->
+  <div class="view" id="view-main-tool">
+    <div class="pg-head"><h1>Nominate a coin</h1><p>Paste a Solana coin address. We check the pool, you confirm with a signature.</p></div>
+    <div class="wrap">
+      <ol class="stepstrip" id="stepstrip">
+        <li data-s="1"><b>1</b>Paste</li><li data-s="2"><b>2</b>Review</li><li data-s="3"><b>3</b>Confirm</li>
+      </ol>
+      <form class="lookup" id="lookupForm" novalidate>
+        <span class="prompt mono" aria-hidden="true">$</span>
+        <input type="text" id="mintInput" placeholder="Paste a Solana coin address" autocomplete="off" spellcheck="false" aria-label="Solana coin address">
+        <button class="btn" type="submit" id="lookupBtn">Check it</button>
+      </form>
+      <p class="hint">Only the coin's own address works here, not a wallet or a pair link.</p>
+      <div id="toolResult"></div>
+    </div>
+  </div>
+
+  <!-- ================= VOTE ================= -->
+  <div class="view" id="view-vote">
+    <div class="pg-head"><h1>Open votes</h1><p>Holders decide what the sun swallows.</p></div>
+    <div class="wrap">
+      <div class="rules">One wallet · one vote per case · weight = your $GULP balance · signature only, never a transaction</div>
+      <div class="tiles" id="voteTiles"></div>
+      <div class="box dark">
+        <h3>Why you can trust this page</h3>
+        <ul>
+          <li>Voting asks your wallet to sign a text message. It never sends a transaction.</li>
+          <li>Your weight is read from the Solana network. We cannot change it.</li>
+          <li>Every vote keeps its signature, so anyone can check who voted.</li>
+        </ul>
+      </div>
+      <div class="section-title" style="margin-top:22px"><h2>On the table</h2></div>
+      <div class="plist" id="openList"></div>
+    </div>
+  </div>
+
+  <!-- ================= HOW ================= -->
+  <div class="view" id="view-how">
+    <div class="pg-head"><h1>How it works</h1><p>Four steps from a quiet coin to the ledger.</p></div>
+    <div class="wrap">
+      <div class="steps" style="grid-template-columns:repeat(4,1fr)" id="howSteps">
+        <div class="step"><span class="step-n">01</span><h4>Find</h4><p>Spot a coin that has gone quiet. No trades, no liquidity.</p></div>
+        <div class="step"><span class="step-n">02</span><h4>Paste</h4><p>Drop its address into the checker. You get a verdict and the reason.</p></div>
+        <div class="step"><span class="step-n">03</span><h4>Vote</h4><p>Holders vote yes or no. Quorum and the clock are shown on every case.</p></div>
+        <div class="step"><span class="step-n">04</span><h4>Absorbed</h4><p>A winning case goes in the ledger. A losing one is kept there too.</p></div>
+      </div>
+      <div class="cols" style="margin-top:14px">
+        <div class="box">
+          <h3>Key protections</h3>
+          <ul>
+            <li>Signature only. No transaction is ever requested.</li>
+            <li>Live coins and brand-new coins cannot be nominated.</li>
+            <li>One vote per wallet per case.</li>
+            <li>Weight is read from the chain, not typed in.</li>
+            <li>Rejected cases stay in the ledger.</li>
+          </ul>
+        </div>
+        <div class="box risk">
+          <h3>The honest risk box</h3>
+          <ul>
+            <li>Meme coins are volatile and can go to zero.</li>
+            <li>A verdict is a reading of pool numbers, not advice.</li>
+            <li>Votes are stored in the browser until a server is connected.</li>
+            <li>Never share a seed phrase with anyone, including us.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-title" style="margin-top:22px"><h2>Why would each side say yes?</h2></div>
+      <div class="cols">
+        <div class="box">
+          <h3>$GULP holders</h3>
+          <ul><li>A bigger, more active ledger makes the project worth watching.</li><li>You choose what gets absorbed. Nothing happens without a vote.</li><li>Every case is public, so the record speaks for itself.</li></ul>
+        </div>
+        <div class="box">
+          <h3>A quiet coin's holders</h3>
+          <ul><li>A coin with no volume has nothing left to lose.</li><li>A vote gives the community a clear, public outcome.</li><li>The ledger keeps the coin's name on the record.</li></ul>
+        </div>
+      </div>
+      <div class="share"><a class="btn" href="#/main-tool">Nominate a coin</a><a class="btn btn-ghost" href="#/vote">See open votes</a></div>
+    </div>
+  </div>
+
+  <!-- ================= LEDGER (board) ================= -->
+  <div class="view" id="view-board">
+    <div class="pg-head"><h1>The ledger</h1><p>Every case that has closed, win or lose.</p></div>
+    <div class="wrap">
+      <div class="tiles" id="boardTiles"></div>
+      <div class="tabs" role="tablist" aria-label="Ledger tabs">
+        <button class="tab" role="tab" type="button" data-act="tab" data-tab="completed" aria-selected="true">Completed</button>
+        <button class="tab" role="tab" type="button" data-act="tab" data-tab="rejected" aria-selected="false">Rejected</button>
+      </div>
+      <div class="hist" id="histList"></div>
+    </div>
+  </div>
+
+  <!-- ================= PROPOSAL ================= -->
+  <div class="view" id="view-p"><div class="wrap" id="propBox"></div></div>
+  </main>
+
+  <footer class="foot">
+    <div class="foot-row">
+      <span>© 2026 GULP</span>
+      <nav aria-label="Footer">
+        <a href="#/main-tool">Nominate</a><a href="#/vote">Vote</a><a href="#/how">How</a><a href="#/board">Ledger</a>
+        <a href="https://x.com/" target="_blank" rel="noopener" data-x>X</a>
+      </nav>
+      <span>The sun is hungry ★</span>
+    </div>
+    <p class="risk" style="margin:0">Not financial advice. Meme coins are volatile and can lose all their value. GULP only asks for message signatures and never moves your funds. Do your own research.</p>
+  </footer>
+
+</div>
+
+<!-- Wallet modal (above everything) -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var CFG = window.GULP_CONFIG;
+var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var $ = function(s, r){ return (r||document).querySelector(s); };
+var $$ = function(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+var esc = function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); };
+
+/* ---------- storage (never throws) ---------- */
+var mem = {};
+var store = {
+  get: function(k, d){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return (k in mem) ? mem[k] : d; } },
+  set: function(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){ mem[k] = v; } },
+  del: function(k){ try{ localStorage.removeItem(k); }catch(e){} delete mem[k]; }
+};
+
+/* ---------- formatting ---------- */
+function usd(n){ if(n==null||isNaN(n)) return '—'; n=+n; if(n>=1e9) return '$'+(n/1e9).toFixed(2)+'B'; if(n>=1e6) return '$'+(n/1e6).toFixed(2)+'M'; if(n>=1e4) return '$'+Math.round(n/1e3)+'K'; if(n>=1000) return '$'+Math.round(n).toLocaleString('en-US'); if(n>=1) return '$'+n.toFixed(0); if(n>0) return '$'+n.toFixed(2); return '$0'; }
+function price(n){ if(n==null||isNaN(n)) return '—'; n=+n; if(n>=1) return '$'+n.toFixed(2); if(n>=0.01) return '$'+n.toFixed(4); return '$'+n.toPrecision(2); }
+function num(n){ if(n==null||isNaN(n)) return '—'; n=+n; if(n>=1e9) return (n/1e9).toFixed(2)+'B'; if(n>=1e6) return (n/1e6).toFixed(2)+'M'; if(n>=1e4) return (n/1e3).toFixed(1)+'K'; return (Math.round(n*100)/100).toLocaleString('en-US'); }
+function short(a){ a=String(a||''); return a.length>10 ? a.slice(0,4)+'…'+a.slice(-4) : a; }
+function dstr(ts){ try{ return new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return ''; } }
+function left(ms){ if(ms<=0) return 'closed'; var d=Math.floor(ms/864e5), h=Math.floor(ms%864e5/36e5), m=Math.floor(ms%36e5/6e4); return d? d+'d '+h+'h left' : (h? h+'h '+m+'m left' : m+'m left'); }
+function baseUrl(){ return (CFG.siteUrl || (location.href.split('#')[0])); }
+
+/* ---------- toast ---------- */
+var toastT;
+function toast(msg, kind){ var t=$('#toast'); t.textContent=msg; t.className='toast on'+(kind==='err'?' err':''); clearTimeout(toastT); toastT=setTimeout(function(){ t.className='toast'; }, 4200); }
+
+/* ---------- state ---------- */
+function seed(){
+  var now=Date.now(), D=864e5;
+  function mk(o){ o.votes=[]; o.seed=true; return o; }
+  return [
+    mk({id:'sgbs01',mint:'6tQmN3pXv8WkRz4YbJc2HfLd9sUeA7gTxP5vZyKq1WhM',name:'Soggy Biscuit',symbol:'$SGBS',by:'8fRk…2mQd',createdAt:now-1.2*D,endsAt:now+3.8*D,verdict:'good',reason:'Almost no liquidity and almost no trading. This is a clean candidate.',metrics:{liq:640,vol:38,ageDays:71,mcap:4100,price:0.0000041},tally:{yes:14,no:3}}),
+    mk({id:'mlnt02',mint:'9bWzE4rTq2NxKd7YhCj5MfPs8LgUaV3tXn6vRyQ1HkZe',name:'Moonlint',symbol:'$MLNT',by:'3dHq…9xTe',createdAt:now-3.1*D,endsAt:now+1.9*D,verdict:'risky',reason:'Some life left: liquidity or volume is above the clean range. Holders may push back.',metrics:{liq:6900,vol:1900,ageDays:44,mcap:31000,price:0.000031},tally:{yes:11,no:12}}),
+    mk({id:'pxwl03',mint:'2kRvB8nYz5TqXd4WjCh7MfPs9LgUaE3tNx6vHyQ1KmZe',name:'Pixel Walrus',symbol:'$PXWL',by:'Bm7Y…4pLs',createdAt:now-0.4*D,endsAt:now+4.6*D,verdict:'good',reason:'Almost no liquidity and almost no trading. This is a clean candidate.',metrics:{liq:210,vol:0,ageDays:133,mcap:900,price:0.0000009},tally:{yes:6,no:1}}),
+    mk({id:'cptn04',mint:'7hMxQ2vNb9TrKd5YzCj4WfPs8LgUaE3tXn6vRyH1kZeB',name:'Captain Noodle',symbol:'$CPTN',by:'5nGt…8kWa',createdAt:now-12*D,endsAt:now-7*D,status:'completed',verdict:'good',reason:'Almost no liquidity and almost no trading. This is a clean candidate.',metrics:{liq:880,vol:12,ageDays:96,mcap:5200,price:0.0000052},tally:{yes:118,no:21}}),
+    mk({id:'frgp05',mint:'4cNvX7pTq2WkRz9YbJd5HfLm8sUeA6gTxP3vZyKq1WhE',name:'Frog Parliament',symbol:'$FRGP',by:'Hq2T…7vNc',createdAt:now-19*D,endsAt:now-14*D,status:'completed',verdict:'good',reason:'Almost no liquidity and almost no trading. This is a clean candidate.',metrics:{liq:1500,vol:96,ageDays:81,mcap:8800,price:0.0000088},tally:{yes:64,no:9}}),
+    mk({id:'lntg06',mint:'8wTbR5nYz3QxKd6VhCj2MfPs7LgUaE4tXn9vHyQ1kZeB',name:'Lint Goblin',symbol:'$LNTG',by:'Zd4K…1uRp',createdAt:now-26*D,endsAt:now-21*D,status:'completed',verdict:'risky',reason:'Some life left: liquidity or volume is above the clean range. Holders may push back.',metrics:{liq:4300,vol:620,ageDays:58,mcap:15400,price:0.0000154},tally:{yes:41,no:12}}),
+    mk({id:'ghbg07',mint:'3fKqN9rTv6WbXd2YzCj8HmPs5LgUaE7tRn4vZyQ1kMhE',name:'Ghostbag',symbol:'$GHBG',by:'Wp9X…3cGy',createdAt:now-16*D,endsAt:now-11*D,status:'rejected',verdict:'risky',reason:'Some life left: liquidity or volume is above the clean range. Holders may push back.',metrics:{liq:11200,vol:3900,ageDays:39,mcap:62000,price:0.000062},tally:{yes:9,no:27}})
+  ];
+}
+var S = store.get('gulp_state_v1', null);
+if(!S || !Array.isArray(S.proposals)){ S = { proposals: CFG.seedHistory ? seed() : [] }; store.set('gulp_state_v1', S); }
+function save(){ store.set('gulp_state_v1', S); }
+function find(id){ for(var i=0;i<S.proposals.length;i++) if(S.proposals[i].id===id) return S.proposals[i]; return null; }
+function totals(p){ var y=p.tally.yes||0, n=p.tally.no||0; (p.votes||[]).forEach(function(v){ if(v.side==='yes') y+=v.weight; else n+=v.weight; }); return {yes:y,no:n,total:y+n}; }
+function status(p){ if(p.status) return p.status; if(Date.now()<p.endsAt) return 'open'; var t=totals(p); return (t.total>=CFG.quorum && t.yes>t.no) ? 'completed' : 'rejected'; }
+function mirror(kind, body){ if(!CFG.api) return; try{ fetch(CFG.api.replace(/\/$/,'')+'/'+kind, {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).catch(function(){}); }catch(e){} }
+
+/* ---------- base58 ---------- */
+var B58='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+function b58enc(buf){ var d=[0],i,j,c; for(i=0;i<buf.length;i++){ c=buf[i]; for(j=0;j<d.length;j++){ c+=d[j]<<8; d[j]=c%58; c=(c/58)|0; } while(c>0){ d.push(c%58); c=(c/58)|0; } } var s=''; for(i=0;i<buf.length&&buf[i]===0;i++) s+='1'; for(i=d.length-1;i>=0;i--) s+=B58[d[i]]; return s; }
+var MINT_RE=/^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+
+/* ---------- Solana RPC ---------- */
+function rpc(method, params){
+  return fetch(CFG.rpc,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:method,params:params})})
+    .then(function(r){ if(!r.ok){ var e=new Error('rpc '+r.status); e.status=r.status; throw e; } return r.json(); })
+    .then(function(j){ if(j.error){ var e=new Error(j.error.message||'rpc error'); e.rpc=true; throw e; } return j.result; });
+}
+function rpcMsg(e){ if(e && e.status===429) return 'The Solana network is busy right now. Wait a few seconds and try again.'; if(e && (e.status===403||e.status===401)) return 'The Solana network blocked this request. The team needs to set a different RPC in the config.'; return 'Could not reach the Solana network. Check your connection and try again.'; }
+function tokenBalance(owner, mint){ return rpc('getTokenAccountsByOwner',[owner,{mint:mint},{encoding:'jsonParsed'}]).then(function(r){ var t=0; (r.value||[]).forEach(function(a){ try{ t+=a.account.data.parsed.info.tokenAmount.uiAmount||0; }catch(e){} }); return t; }); }
+function tokenSupply(mint){ return rpc('getTokenSupply',[mint]).then(function(r){ return r.value.uiAmount; }); }
+
+/* ---------- wallet ---------- */
+var WALLETS=[
+  {id:'phantom',name:'Phantom',url:'https://phantom.app/download',get:function(){ return (window.phantom&&window.phantom.solana&&window.phantom.solana.isPhantom)?window.phantom.solana:((window.solana&&window.solana.isPhantom)?window.solana:null); }},
+  {id:'solflare',name:'Solflare',url:'https://solflare.com/download',get:function(){ return (window.solflare&&window.solflare.isSolflare)?window.solflare:null; }},
+  {id:'backpack',name:'Backpack',url:'https://backpack.app/download',get:function(){ return (window.backpack&&(window.backpack.isBackpack||window.backpack.connect))?window.backpack:null; }},
+  {id:'coinbase',name:'Coinbase Wallet',url:'https://www.coinbase.com/wallet/downloads',get:function(){ return window.coinbaseSolana||null; }},
+  {id:'trust',name:'Trust Wallet',url:'https://trustwallet.com/download',get:function(){ return (window.trustwallet&&window.trustwallet.solana)||(window.trustWallet&&window.trustWallet.solana)||null; }}
+];
+var W={id:null,provider:null,pubkey:null,balance:null,weightMode:null};
+function wById(id){ return WALLETS.filter(function(w){return w.id===id;})[0]; }
+function onAccount(pk){
+  if(pk){ W.pubkey=pk.toString(); W.balance=null; store.set('gulp_wallet',W.id); walletUI(); refreshBalance(); rerender(); toast('Account switched to '+short(W.pubkey)+'.'); }
+  else { /* some wallets emit null when the new account has not approved this site */
+    var w=wById(W.id); if(w&&w.get()) connectWallet(W.id,true).then(function(ok){ if(!ok) clearWallet(); }); else clearWallet();
+  }
+}
+function attach(w, p, pubkey){
+  W.id=w.id; W.provider=p; W.pubkey=pubkey; W.balance=null;
+  if(!p.__gulp && typeof p.on==='function'){
+    p.__gulp=true;
+    try{ p.on('accountChanged', onAccount); p.on('disconnect', function(){ clearWallet(); }); }catch(e){}
+  }
+  walletUI(); refreshBalance(); rerender();
+}
+function clearWallet(){ W.id=null; W.provider=null; W.pubkey=null; W.balance=null; walletUI(); rerender(); }
+function connectWallet(id, quiet){
+  var w=wById(id), p=w&&w.get();
+  if(!p){ if(!quiet) window.open(w.url,'_blank','noopener'); return Promise.resolve(false); }
+  var call = quiet ? p.connect({onlyIfTrusted:true}) : p.connect();
+  return Promise.resolve(call).then(function(res){
+    var pk=(res&&res.publicKey)||p.publicKey; if(!pk) throw new Error('no key');
+    attach(w,p,pk.toString()); store.set('gulp_wallet',id); if(!quiet){ closeModal(); toast('Connected '+short(pk.toString())+'.'); } return true;
+  }).catch(function(err){
+    if(!quiet) toast((err&&err.code===4001)||/reject|denied|cancel/i.test(String(err&&err.message)) ? 'Connection cancelled. Nothing was shared.' : 'Could not connect to '+w.name+'. Unlock it and try again.','err');
+    return false;
+  });
+}
+function disconnectWallet(){ var p=W.provider; try{ if(p&&p.disconnect) Promise.resolve(p.disconnect()).catch(function(){}); }catch(e){} store.del('gulp_wallet'); clearWallet(); closeModal(); toast('Wallet disconnected.'); }
+function quietReconnect(){
+  var id=store.get('gulp_wallet',null); if(!id) return; var tries=0;
+  (function tick(){ var w=wById(id); if(w&&w.get()){ connectWallet(id,true); return; } if(++tries<6) setTimeout(tick, 400); })();
+}
+function sign(msg){
+  if(!W.provider) return Promise.reject(new Error('not connected'));
+  var bytes=new TextEncoder().encode(msg);
+  return Promise.resolve(W.provider.signMessage(bytes,'utf8')).then(function(out){
+    var sig=(out&&out.signature)?out.signature:out; if(!(sig instanceof Uint8Array)) sig=new Uint8Array(sig);
+    return b58enc(sig);
+  });
+}
+function signErr(e){ return (e&&e.code===4001)||/reject|denied|cancel|declin/i.test(String(e&&e.message)) ? 'Signature cancelled. Nothing was sent.' : 'Your wallet could not sign that message. Try again.'; }
+function myWeight(){
+  if(!CFG.tokenMint) return Promise.resolve({weight:1,mode:'pre'});
+  return tokenBalance(W.pubkey, CFG.tokenMint).then(function(b){ return {weight:b,mode:'live'}; });
+}
+function refreshBalance(){
+  if(!W.pubkey){ return; }
+  if(!CFG.tokenMint){ W.balance=null; W.weightMode='pre'; walletUI(); updateWeightTile(); return; }
+  var who=W.pubkey;
+  tokenBalance(who, CFG.tokenMint).then(function(b){ if(W.pubkey!==who) return; W.balance=b; W.weightMode='live'; walletUI(); updateWeightTile(); })
+  .catch(function(e){ W.balance=null; W.weightMode='err'; updateWeightTile(); });
+}
+function weightText(){ if(!W.pubkey) return 'Connect'; if(!CFG.tokenMint) return '1 (pre-launch)'; if(W.weightMode==='err') return 'n/a'; return W.balance==null ? '…' : num(W.balance); }
+function updateWeightTile(){ var t=$('#myWeight'); if(t) t.textContent=weightText(); if($('#modal').classList.contains('on')) openModal(); }
+function walletUI(){ var b=$('#walletBtn'); b.textContent = W.pubkey ? short(W.pubkey) : 'Connect wallet'; }
+
+/* modal */
+var lastFocus=null;
+function openModal(){
+  var m=$('#modal'), box=$('#modalBox'), h='';
+  if(!m.classList.contains('on')) lastFocus=document.activeElement;
+  if(W.pubkey){
+    h='<button class="modal-x" type="button" data-act="modal-close" aria-label="Close">X</button><h3 id="modalTitle">Wallet connected</h3>'+
+      '<div class="acct">'+esc(W.pubkey)+'</div>'+
+      '<p style="margin:0">'+(CFG.tokenMint ? '$GULP balance: <b>'+esc(W.weightMode==='err'?'could not read':(W.balance==null?'loading…':num(W.balance)))+'</b>' : 'Before launch every wallet counts as one vote.')+'</p>'+
+      '<div class="res-actions"><button class="btn" type="button" data-act="disconnect">Disconnect</button></div>'+
+      '<p class="modal-note">GULP only asks you to sign messages. It never sends a transaction or moves your funds.</p>';
+  } else {
+    h='<button class="modal-x" type="button" data-act="modal-close" aria-label="Close">X</button><h3 id="modalTitle">Connect a wallet</h3><p style="margin:0">Pick the wallet you use on Solana.</p><ul class="wlist">'+
+      WALLETS.map(function(w){ var det=!!w.get(); return '<li><button class="wbtn" type="button" data-act="connect" data-w="'+w.id+'"><span>'+w.name+'</span><em class="'+(det?'':'inst')+'">'+(det?'Detected':'Install')+'</em></button></li>'; }).join('')+
+      '</ul><p class="modal-note">GULP only asks you to sign messages. It never sends a transaction or moves your funds.</p>';
+  }
+  box.innerHTML=h; m.classList.add('on');
+  var f=$('.wbtn,.btn',box)||$('.modal-x',box); if(f) try{ f.focus(); }catch(e){}
+}
+function closeModal(){ var m=$('#modal'); if(!m.classList.contains('on')) return; m.classList.remove('on'); if(lastFocus&&lastFocus.focus) try{ lastFocus.focus(); }catch(e){} }
+
+/* ---------- verdict ---------- */
+function badge(v){ var map={good:['good','✓ GOOD FIT'],risky:['risky','! RISKY'],no:['no','✗ NOT ALLOWED']}; var x=map[v]||map.risky; return '<span class="badge '+x[0]+'">'+x[1]+'</span>'; }
+function judge(m, mint){
+  var R=CFG.rules;
+  if(CFG.tokenMint && mint===CFG.tokenMint) return {v:'no',reason:'GULP cannot absorb itself.'};
+  if(m.ageDays!==null && m.ageDays<R.minAgeDays) return {v:'no',reason:'Its pool is only '+Math.max(0,Math.floor(m.ageDays))+' day'+(Math.floor(m.ageDays)===1?'':'s')+' old. A coin must be at least '+R.minAgeDays+' days old to count as dead.'};
+  if(m.liq>R.riskyMaxLiquidityUsd || m.vol>R.riskyMaxVolume24hUsd) return {v:'no',reason:'It is still trading actively. Only quiet coins can be nominated.'};
+  if(m.liq<=R.goodMaxLiquidityUsd && m.vol<=R.goodMaxVolume24hUsd) return {v:'good',reason:'Almost no liquidity and almost no trading. This is a clean candidate.'};
+  return {v:'risky',reason:'Some life left: liquidity or volume is above the clean range. Holders may push back.'};
+}
+function dexLookup(mint){
+  return fetch('https://api.dexscreener.com/latest/dex/tokens/'+encodeURIComponent(mint)).then(function(r){
+    if(r.status===429){ var e=new Error('busy'); e.kind='busy'; throw e; }
+    if(!r.ok){ var e2=new Error('http'); e2.kind='http'; throw e2; }
+    return r.json();
+  }).then(function(j){
+    var pairs=(j&&j.pairs||[]).filter(function(p){ return p.chainId==='solana' && p.baseToken && p.baseToken.address===mint; });
+    pairs.sort(function(a,b){ return ((b.liquidity&&b.liquidity.usd)||0)-((a.liquidity&&a.liquidity.usd)||0); });
+    return pairs[0]||null;
+  });
+}
+
+/* ---------- tool page ---------- */
+var T={step:1,mint:'',data:null,verdict:null,busy:false,error:null,done:null};
+function renderTool(){
+  $$('#stepstrip li').forEach(function(li){ var s=+li.dataset.s; li.className = s<T.step ? 'done' : (s===T.step ? (T.done?'done':'on') : ''); });
+  var box=$('#toolResult'), h='';
+  if(T.busy){ h='<div class="result idle"><b>Checking the pool…</b><p>Asking DexScreener and the Solana network. This takes a few seconds.</p></div>'; }
+  else if(T.error){ h='<div class="result"><div class="res-head">'+badge('no')+'</div><p class="sentence">'+esc(T.error)+'</p></div>'; }
+  else if(!T.data){ h='<div class="result idle"><b>Your coin shows up here</b><p>Paste an address above. You will get a plain-language answer first, then the numbers.</p></div>'; }
+  else { h=resultHtml(); }
+  box.innerHTML=h;
+}
+function resultHtml(){
+  var d=T.data, v=T.verdict, m=d.metrics;
+  var age = m.ageDays===null ? 'an unknown number of' : Math.floor(m.ageDays);
+  var vs = v.v==='good' ? 'It qualifies for a vote.' : (v.v==='risky' ? 'It can be nominated, but expect a debate.' : 'It cannot be nominated.');
+  var sentence = esc(d.name)+' has '+usd(m.liq)+' of liquidity, '+usd(m.vol)+' traded in the last 24 hours and its pool is '+age+' days old. '+vs;
+  var open=S.proposals.filter(function(p){ return p.mint===T.mint && status(p)==='open'; })[0];
+  var act;
+  if(T.done){ act='<a class="btn" href="#/p/'+T.done+'">Open the case</a><a class="btn btn-ghost" href="#/vote">See open votes</a>'; }
+  else if(v.v==='no'){ act='<button class="btn" type="button" disabled>Not allowed</button>'; }
+  else if(open){ act='<a class="btn" href="#/p/'+open.id+'">Already open: vote on it</a>'; }
+  else if(!W.pubkey){ act='<button class="btn" type="button" data-act="wallet-open">Connect wallet to confirm</button>'; }
+  else { act='<button class="btn" type="button" data-act="nominate" id="nomBtn">Sign &amp; nominate</button>'; }
+  return '<div class="result"><div class="res-head">'+badge(v.v)+'<span class="coin">'+esc(d.name)+'<small>'+esc(d.symbol)+'</small></span></div>'+
+    '<p class="sentence">'+sentence+'</p><p class="why"><b>Why:</b> '+esc(v.reason)+'</p>'+
+    '<div class="nums"><div><b>'+usd(m.liq)+'</b><span>Liquidity</span></div><div><b>'+usd(m.vol)+'</b><span>24h volume</span></div><div><b>'+(m.ageDays===null?'—':Math.floor(m.ageDays)+' d')+'</b><span>Pool age</span></div>'+
+    '<div><b>'+usd(m.mcap)+'</b><span>Market cap</span></div><div><b>'+price(m.price)+'</b><span>Price</span></div><div><b>'+(d.supply==null?'—':num(d.supply))+'</b><span>Supply (on-chain)</span></div></div>'+
+    (T.done ? '<p class="sentence" style="font-size:19px">Nominated and signed. Holders can vote for '+CFG.voteDays+' days.</p>' : '')+
+    '<div class="res-actions">'+act+'</div><p class="safe">Signing is free. GULP never sends a transaction or moves your funds.</p></div>';
+}
+function lookup(mint){
+  T.mint=mint; T.data=null; T.verdict=null; T.error=null; T.done=null; T.busy=true; T.step=1; renderTool();
+  var supply=null;
+  var sp=tokenSupply(mint).then(function(s){ supply=s; }).catch(function(){ supply=null; });
+  return dexLookup(mint).then(function(pair){
+    return sp.then(function(){
+      T.busy=false;
+      if(!pair){ T.error='No Solana trading pair found for that address. We can only check coins that have, or had, a pool on DexScreener.'; T.step=1; renderTool(); return; }
+      var created=pair.pairCreatedAt;
+      var m={liq:(pair.liquidity&&pair.liquidity.usd)||0, vol:(pair.volume&&pair.volume.h24)||0, ageDays:created?(Date.now()-created)/864e5:null, mcap:pair.marketCap||pair.fdv||null, price:+pair.priceUsd||null};
+      T.data={name:pair.baseToken.name||'Unnamed coin', symbol:'$'+(pair.baseToken.symbol||'?').replace(/^\$/,''), metrics:m, supply:supply};
+      T.verdict=judge(m,mint); T.step=2; renderTool();
+    });
+  }).catch(function(e){
+    T.busy=false; T.step=1;
+    T.error = e&&e.kind==='busy' ? 'DexScreener is rate-limiting requests. Wait a few seconds and try again.' : 'Could not load pool data. Check your connection and try again.';
+    renderTool();
+  });
+}
+function nominate(){
+  if(!W.pubkey){ openModal(); return; }
+  if(!T.data||!T.verdict||T.verdict.v==='no') return;
+  var btn=$('#nomBtn'); if(btn){ btn.disabled=true; btn.textContent='Waiting for your wallet…'; }
+  var id='g'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  var msg='GULP nomination\nCoin: '+T.data.symbol+'\nMint: '+T.mint+'\nWallet: '+W.pubkey+'\nTime: '+new Date().toISOString()+'\nThis is a message signature only. It never sends a transaction or moves funds.';
+  sign(msg).then(function(sig){
+    var p={id:id,mint:T.mint,name:T.data.name,symbol:T.data.symbol,by:short(W.pubkey),wallet:W.pubkey,createdAt:Date.now(),endsAt:Date.now()+CFG.voteDays*864e5,verdict:T.verdict.v,reason:T.verdict.reason,metrics:T.data.metrics,tally:{yes:0,no:0},votes:[],sig:sig,msg:msg};
+    S.proposals.unshift(p); save(); mirror('proposals',p);
+    T.done=id; T.step=3; renderTool(); toast('Nominated. Voting is open.');
+  }).catch(function(e){ toast(signErr(e),'err'); renderTool(); });
+}
+
+/* ---------- vote ---------- */
+function myVote(p){ if(!W.pubkey) return null; return (p.votes||[]).filter(function(v){ return v.w===W.pubkey; })[0]||null; }
+function propCard(p, full){
+  var t=totals(p), st=status(p), yp=t.total?Math.round(t.yes/t.total*100):0, np=t.total?100-yp:0, q=Math.min(100,Math.round(t.total/CFG.quorum*100));
+  var mv=myVote(p), act='';
+  if(st==='open'){
+    act = mv ? '<span class="tag">You voted '+mv.side.toUpperCase()+'</span>' :
+      '<button class="btn btn-sm" type="button" data-vote="yes" data-id="'+p.id+'">Vote YES</button><button class="btn btn-ghost btn-sm" type="button" data-vote="no" data-id="'+p.id+'">Vote NO</button>';
+    act += '<span class="tag out">'+left(p.endsAt-Date.now())+'</span>';
+  } else { act='<span class="tag'+(st==='completed'?'':' out')+'">'+(st==='completed'?'Absorbed':'Rejected')+'</span>'; }
+  if(!full) act+='<a class="btn btn-ghost btn-sm" href="#/p/'+p.id+'">Open</a>';
+  return '<article class="prop" data-id="'+p.id+'"><div class="prop-top"><div><h3>'+esc(p.name)+'<small>'+esc(p.symbol)+'</small></h3><div class="mint mono">'+esc(short(p.mint))+' · by '+esc(p.by||'')+'</div></div>'+badge(p.verdict)+'</div>'+
+    '<p class="prop-reason">'+esc(p.reason)+'</p>'+
+    '<div class="vrow"><span>YES</span><div class="bar"><i style="width:'+yp+'%"></i></div><b>'+yp+'% · '+num(t.yes)+'</b></div>'+
+    '<div class="vrow"><span>NO</span><div class="bar no"><i style="width:'+np+'%"></i></div><b>'+np+'% · '+num(t.no)+'</b></div>'+
+    '<div class="vrow"><span>QUORUM</span><div class="bar q"><i style="width:'+q+'%"></i></div><b>'+num(t.total)+' / '+CFG.quorum+'</b></div>'+
+    '<div class="prop-actions">'+act+'</div></article>';
+}
+function renderVote(){
+  var open=S.proposals.filter(function(p){ return status(p)==='open'; });
+  var votes=0; S.proposals.forEach(function(p){ votes+=(p.votes||[]).length; });
+  $('#voteTiles').innerHTML='<div class="tile"><b>'+open.length+'</b><span>Open cases</span></div><div class="tile"><b id="myWeight">'+esc(weightText())+'</b><span>Your vote weight</span></div><div class="tile"><b>'+CFG.quorum+'</b><span>Quorum</span></div><div class="tile"><b>'+CFG.voteDays+' d</b><span>Voting window</span></div>';
+  $('#openList').innerHTML = open.length ? open.map(function(p){ return propCard(p); }).join('') : '<div class="empty">Nothing is up for a vote right now.<br><a class="btn" style="margin-top:14px" href="#/main-tool">Nominate a coin</a></div>';
+}
+function castVote(id, side){
+  var p=find(id); if(!p||status(p)!=='open'){ toast('Voting on this case is closed.','err'); return; }
+  if(!W.pubkey){ openModal(); toast('Connect a wallet to vote.'); return; }
+  if(myVote(p)){ toast('This wallet has already voted on this case.','err'); return; }
+  myWeight().then(function(wt){
+    if(!(wt.weight>0)){ toast('Hold some $GULP in this wallet to vote.','err'); return; }
+    var msg='GULP vote\nCase: '+p.id+'\nCoin: '+p.symbol+'\nVote: '+side.toUpperCase()+'\nWeight: '+wt.weight+'\nWallet: '+W.pubkey+'\nTime: '+new Date().toISOString()+'\nThis is a message signature only. It never sends a transaction or moves funds.';
+    return sign(msg).then(function(sig){
+      var v={w:W.pubkey,side:side,weight:wt.weight,sig:sig,msg:msg,ts:Date.now()};
+      p.votes=p.votes||[]; p.votes.push(v); save(); mirror('votes',{proposal:p.id,vote:v});
+      toast('Vote signed and counted.'); rerender();
+    }).catch(function(e){ toast(signErr(e),'err'); });
+  }).catch(function(e){ toast(rpcMsg(e),'err'); });
+}
+
+/* ---------- board ---------- */
+var boardTab='completed';
+function renderBoard(){
+  var done=S.proposals.filter(function(p){ return status(p)==='completed'; }), rej=S.proposals.filter(function(p){ return status(p)==='rejected'; });
+  var votes=0; S.proposals.forEach(function(p){ votes+=totals(p).total; });
+  $('#boardTiles').innerHTML='<div class="tile"><b>'+done.length+'</b><span>Absorbed</span></div><div class="tile"><b>'+rej.length+'</b><span>Rejected</span></div><div class="tile"><b>'+num(votes)+'</b><span>Total vote weight</span></div><div class="tile"><b>'+S.proposals.length+'</b><span>Cases opened</span></div>';
+  $$('.tab').forEach(function(t){ t.setAttribute('aria-selected', t.dataset.tab===boardTab ? 'true':'false'); });
+  var list = boardTab==='completed' ? done : rej;
+  $('#histList').innerHTML = list.length ? list.map(function(p){ return propCard(p); }).join('') : '<div class="empty" style="grid-column:1/-1">Nothing here yet.</div>';
+}
+
+/* ---------- proposal ---------- */
+function renderProposal(id){
+  var p=find(id), box=$('#propBox');
+  if(!p){ box.innerHTML='<div class="pg-head" style="padding-left:0"><h1>Case not found</h1><p>That link does not match a case in this browser.</p></div><div class="share"><a class="btn" href="#/vote">Open votes</a><a class="btn btn-ghost" href="#/board">The ledger</a></div>'; return; }
+  var st=status(p), m=p.metrics||{};
+  var links = p.seed ? '' : '<a class="btn btn-ghost btn-sm" href="https://dexscreener.com/solana/'+encodeURIComponent(p.mint)+'" target="_blank" rel="noopener">DexScreener</a><a class="btn btn-ghost btn-sm" href="https://solscan.io/token/'+encodeURIComponent(p.mint)+'" target="_blank" rel="noopener">Solscan</a>';
+  box.innerHTML='<div class="pg-head" style="padding-left:0"><h1>'+esc(p.name)+'</h1><p>Case '+esc(p.id)+' · opened '+esc(dstr(p.createdAt))+' · '+(st==='open'?'closes '+esc(dstr(p.endsAt)):'closed '+esc(dstr(p.endsAt)))+'</p></div>'+
+    propCard(p,true)+
+    '<div class="nums" style="margin-top:16px;position:relative"><div><b>'+usd(m.liq)+'</b><span>Liquidity</span></div><div><b>'+usd(m.vol)+'</b><span>24h volume</span></div><div><b>'+(m.ageDays==null?'—':Math.floor(m.ageDays)+' d')+'</b><span>Pool age at nomination</span></div></div>'+
+    '<p class="timeline mono">Mint: '+esc(p.mint)+'</p>'+
+    '<div class="share"><button class="btn" type="button" data-act="share" data-id="'+p.id+'">Share on X</button><button class="btn btn-ghost" type="button" data-act="copy-link" data-id="'+p.id+'">Copy link</button>'+links+'<a class="btn btn-ghost" href="#/vote">All votes</a></div>';
+}
+function caseUrl(id){ return baseUrl()+'#/p/'+id; }
+function copyText(t){
+  if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t);
+  return new Promise(function(res,rej){ try{ var a=document.createElement('textarea'); a.value=t; a.style.position='fixed'; a.style.opacity='0'; document.body.appendChild(a); a.select(); document.execCommand('copy'); document.body.removeChild(a); res(); }catch(e){ rej(e); } });
+}
+
+/* ---------- stats on home ---------- */
+function renderStats(){
+  var open=0,done=0,rej=0,votes=0;
+  S.proposals.forEach(function(p){ var s=status(p); if(s==='open') open++; else if(s==='completed') done++; else rej++; votes+=totals(p).total; });
+  $('#homeStats').innerHTML='<div class="stat"><b>'+open+'</b><span>Open votes</span></div><div class="stat"><b>'+done+'</b><span>Absorbed</span></div><div class="stat"><b>'+rej+'</b><span>Rejected</span></div><div class="stat"><b>'+num(votes)+'</b><span>Vote weight cast</span></div>';
+}
+
+/* ---------- router (all internal links go through here) ---------- */
+var curKey=null;
+function parseHash(){ var h=location.hash.replace(/^#\/?/,''); var a=h.split('/'); return {page:a[0]||'home', id:a[1]||''}; }
+var VIEWS={home:'view-home','main-tool':'view-main-tool',vote:'view-vote',how:'view-how',board:'view-board',p:'view-p'};
+var TITLES={home:'GULP · Dead coins get swallowed by the sun','main-tool':'Nominate a coin · GULP',vote:'Open votes · GULP',how:'How it works · GULP',board:'The ledger · GULP',p:'Case · GULP'};
+function route(force){
+  var r=parseHash(), page=VIEWS[r.page]?r.page:'home', key=page+'/'+r.id, changed=key!==curKey;
+  if(!changed && !force) return; curKey=key;
+  $$('.view').forEach(function(v){ v.classList.toggle('on', v.id===VIEWS[page]); });
+  $$('[data-nav]').forEach(function(a){ var on=a.dataset.nav===page || (page==='p'&&a.dataset.nav==='vote'); if(on) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  if(page==='home') renderStats(); else if(page==='main-tool') renderTool(); else if(page==='vote') renderVote(); else if(page==='board') renderBoard(); else if(page==='p') renderProposal(r.id);
+  document.title=TITLES[page];
+  if(changed) window.scrollTo(0,0);
+}
+function rerender(){ route(true); }
+function go(path){ var t='#'+path; if(location.hash!==t){ try{ location.hash=t; }catch(e){} } route(); }
+
+document.addEventListener('click', function(e){
+  var a=e.target.closest && e.target.closest('a[href^="#"]');
+  if(a){ var h=a.getAttribute('href'); if(h.indexOf('#/')===0){ e.preventDefault(); closeModal(); go(h.slice(1)); return; } }
+  var el=e.target.closest && e.target.closest('[data-act],[data-vote]'); if(!el) return;
+  if(el.dataset.vote){ castVote(el.dataset.id, el.dataset.vote); return; }
+  var act=el.dataset.act;
+  if(act==='wallet-open'){ openModal(); }
+  else if(act==='modal-close'){ closeModal(); }
+  else if(act==='connect'){ connectWallet(el.dataset.w,false); }
+  else if(act==='disconnect'){ disconnectWallet(); }
+  else if(act==='nominate'){ nominate(); }
+  else if(act==='tab'){ boardTab=el.dataset.tab; renderBoard(); }
+  else if(act==='copy-link'){ copyText(caseUrl(el.dataset.id)).then(function(){ toast('Link copied.'); }).catch(function(){ toast('Could not copy. Select the address bar instead.','err'); }); }
+  else if(act==='share'){ var p=find(el.dataset.id); if(!p) return; var txt='Holders are voting on whether '+p.symbol+' gets absorbed by '+CFG.ticker+'. Cast your signature vote:'; window.open('https://x.com/intent/post?text='+encodeURIComponent(txt)+'&url='+encodeURIComponent(caseUrl(p.id)),'_blank','noopener'); }
+  else if(act==='copy-ca'){ if(CFG.tokenMint) copyText(CFG.tokenMint).then(function(){ var b=$('#copyBtn'); b.textContent='Copied!'; setTimeout(function(){ b.textContent='Copy'; },1500); }).catch(function(){}); }
+});
+$('#modal').addEventListener('mousedown', function(e){ if(e.target===this) closeModal(); });
+window.addEventListener('hashchange', function(){ route(); });
+document.addEventListener('keydown', function(e){
+  if(e.key!=='Escape') return;
+  if($('#modal').classList.contains('on')){ closeModal(); return; }
+  if(parseHash().page!=='home') go('/');
+});
+$('#lookupForm').addEventListener('submit', function(e){
+  e.preventDefault(); var v=$('#mintInput').value.trim();
+  if(!MINT_RE.test(v)){ T.mint=''; T.data=null; T.step=1; T.error='That does not look like a Solana coin address. It is 32 to 44 letters and numbers.'; T.busy=false; T.done=null; renderTool(); return; }
+  lookup(v);
+});
+
+/* ---------- config -> DOM ---------- */
+$$('[data-rule]').forEach(function(el){ var v=CFG.rules[el.dataset.rule]; el.textContent = el.dataset.fmt==='usd' ? usd(v) : v; });
+$$('[data-x]').forEach(function(a){ a.href=CFG.xUrl; });
+if(CFG.tokenMint){ $('#caText').textContent=CFG.tokenMint; var cb=$('#copyBtn'); cb.disabled=false; cb.textContent='Copy'; }
+if(!CFG.features.wallet) $('#walletBtn').style.display='none';
+if(!CFG.features.share) document.documentElement.classList.add('no-share');
+
+/* ---------- terminal typing ---------- */
+(function(){
+  var el=$('#term');
+  var lines=[
+    {t:'$ gulp check DEADCAT',type:true},
+    {t:'<span class="dim">→ reading the pool…</span>'},
+    {t:'  liquidity   $412'},{t:'  volume 24h  $0'},{t:'  pool age    63 days'},
+    {t:'<span class="dim">→ checking the signs…</span>'},
+    {t:'<span class="ok">✓ GOOD FIT</span> ready for a vote'},
+    {t:'<span class="dim">→ holders are voting…</span>'},
+    {t:''},
+    {t:'<span class="ok">✓ ABSORBED</span> filed in the ledger'}
+  ];
+  if(REDUCE){ el.innerHTML=lines.map(function(l){return l.t;}).join('\n')+'\n$ <span class="cursor"></span>'; return; }
+  var html='';
+  function typeLine(i){
+    if(i>=lines.length){ el.innerHTML=html+'$ <span class="cursor"></span>'; setTimeout(function(){ html=''; typeLine(0); },4500); return; }
+    var line=lines[i];
+    if(line.type){ var c=0, iv=setInterval(function(){ c++; el.innerHTML=html+line.t.slice(0,c)+'<span class="cursor"></span>'; if(c>=line.t.length){ clearInterval(iv); html+=line.t+'\n'; setTimeout(function(){ typeLine(i+1); },350); } },55); }
+    else { html+=line.t+'\n'; el.innerHTML=html+'<span class="cursor"></span>'; setTimeout(function(){ typeLine(i+1); },260); }
+  }
+  typeLine(0);
+})();
+
+/* ---------- suns, skylines, and the feeding hero ---------- */
+(function(){
+  var INK='#111', PAPER='#f8f8f5', uid=0;
+  function buildSun(g){
+    var d=g.dataset, cx=+d.cx, cy=+d.cy, r=+d.r, n=+(d.bars||7), dur=+(d.dur||6);
+    var inv=d.invert==='1', disk=inv?PAPER:INK, gap=inv?INK:PAPER, id='sun'+(uid++);
+    var st=d.start!==undefined?+d.start:.3, en=d.end!==undefined?+d.end:1;
+    var top=cy-r+2*r*st, bot=cy-r+2*r*en, h0=2, h1=r*(en-st)*0.32, x=cx-r, w=2*r;
+    var out='<clipPath id="'+id+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'"/></clipPath><g clip-path="url(#'+id+')"><rect x="'+x+'" y="'+(cy-r)+'" width="'+w+'" height="'+(2*r)+'" fill="'+disk+'"/>';
+    for(var i=0;i<n;i++){
+      var t=i/n;
+      if(REDUCE){ out+='<rect x="'+x+'" width="'+w+'" y="'+(top+(bot-top)*t).toFixed(1)+'" height="'+(h0+(h1-h0)*t).toFixed(1)+'" fill="'+gap+'"/>'; }
+      else { var b=(-t*dur).toFixed(2);
+        out+='<rect x="'+x+'" width="'+w+'" y="'+top+'" height="'+h0+'" fill="'+gap+'"><animate attributeName="y" values="'+top+';'+bot+'" dur="'+dur+'s" begin="'+b+'s" repeatCount="indefinite"/><animate attributeName="height" values="'+h0+';'+h1+'" dur="'+dur+'s" begin="'+b+'s" repeatCount="indefinite"/></rect>'; }
+    }
+    out+='</g><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+(inv?PAPER:INK)+'" stroke-width="'+(d.stroke||3)+'"/>';
+    g.innerHTML=out;
+  }
+  function rng(seed){ return function(){ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; }; }
+  function buildSkyline(g){
+    var d=g.dataset, W_=+d.w, base=+d.base, min=+d.min, max=+d.max, r=rng(+d.seed||1);
+    var night=d.mode==='night', dip=d.dip!==undefined?+d.dip:null;
+    var edge=night?' stroke="'+PAPER+'" stroke-width="2"':'';
+    var x=-6, out='';
+    while(x<W_){
+      var w=Math.round(26+r()*44), h=min+r()*(max-min);
+      if(dip!==null){ var k=Math.min(1,Math.abs((x+w/2)/W_-dip)/0.22); h=min*.6+(h-min*.6)*(0.25+0.75*k); }
+      h=Math.round(h); var y=base-h;
+      out+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+(h+6)+'" fill="'+INK+'"'+edge+'/>';
+      if(r()<.5){ for(var wy=y+8; wy<base-8; wy+=11) for(var wx=x+6; wx<x+w-8; wx+=9){ if(r()<.55){ var bl=r()<.16; out+='<rect x="'+wx+'" y="'+wy+'" width="4" height="5" fill="'+PAPER+'"'+(bl?' class="blink" style="animation-delay:'+(-r()*2.6).toFixed(2)+'s"':'')+'/>'; } } }
+      else { for(var wy2=y+8; wy2<base-6; wy2+=8){ out+='<rect x="'+(x+5)+'" y="'+wy2+'" width="'+(w-10)+'" height="2.5" fill="'+PAPER+'"/>'; if(r()<.35) out+='<rect x="'+(x+w-10)+'" y="'+wy2+'" width="3" height="2.5" fill="'+INK+'" class="blink" style="animation-delay:'+(-r()*2.6).toFixed(2)+'s"/>'; } }
+      if(r()<.28){ var ax=x+Math.round(w/2), ac=night?PAPER:INK; out+='<line x1="'+ax+'" y1="'+y+'" x2="'+ax+'" y2="'+(y-16)+'" stroke="'+ac+'" stroke-width="2"/><circle cx="'+ax+'" cy="'+(y-18)+'" r="2.6" fill="'+ac+'" class="blink" style="animation-delay:'+(-r()*2.6).toFixed(2)+'s"/>'; }
+      x+=w+Math.round(r()*6);
+    }
+    g.innerHTML=out;
+  }
+  $$('[data-sun]').forEach(buildSun);
+  $$('[data-skyline]').forEach(buildSkyline);
+
+  var svgs=$$('.scene, .hero-sun svg, .end-art svg');
+  if(REDUCE){ svgs.forEach(function(sv){ try{ sv.setCurrentTime(1.6); sv.pauseAnimations(); }catch(e){} }); }
+  else if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ try{ if(e.isIntersecting) e.target.unpauseAnimations(); else e.target.pauseAnimations(); }catch(err){} }); },{rootMargin:'100px'});
+    svgs.forEach(function(sv){ io.observe(sv); });
+  }
+
+  /* the hero: small suns fly into the big one */
+  var eaten=0, heroVisible=true, NS='http://www.w3.org/2000/svg';
+  function bump(){ eaten++; var n=$('#eatenN'); if(n) n.textContent=eaten; }
+  function feed(){
+    if(REDUCE){ bump(); return; }
+    var layer=$('#feedLayer'); if(!layer||!layer.ownerSVGElement||typeof layer.ownerSVGElement.pauseAnimations!=='function'){ bump(); return; }
+    var a=Math.PI*(1+Math.random()), R=330+Math.random()*60, sx=(320+R*Math.cos(a)).toFixed(0), sy=(320+R*Math.sin(a)).toFixed(0);
+    var g=document.createElementNS(NS,'g');
+    g.innerHTML='<g><circle r="24" fill="#f8f8f5" stroke="#111" stroke-width="3"/><path d="M-24 -4H24M-20 8H20M-12 18H12" stroke="#111" stroke-width="2.5"/><animateTransform attributeName="transform" type="scale" values="1;1;0.12" keyTimes="0;.7;1" dur="3s" begin="indefinite" fill="freeze"/></g>'+
+      '<animateTransform attributeName="transform" type="translate" values="'+sx+' '+sy+';320 320" calcMode="spline" keyTimes="0;1" keySplines=".5 0 .9 .6" dur="3s" begin="indefinite" fill="freeze"/>';
+    layer.appendChild(g);
+    try{ $$('animateTransform',g).forEach(function(an){ an.beginElement(); }); }catch(e){}
+    setTimeout(function(){
+      if(g.parentNode) g.parentNode.removeChild(g); bump();
+      var ring=document.createElementNS(NS,'circle'); ring.setAttribute('cx',320); ring.setAttribute('cy',320); ring.setAttribute('r',252); ring.setAttribute('fill','none'); ring.setAttribute('stroke','#111'); ring.setAttribute('stroke-width',5);
+      ring.innerHTML='<animate attributeName="r" values="252;300" dur=".5s" begin="indefinite" fill="freeze"/><animate attributeName="opacity" values="1;0" dur=".5s" begin="indefinite" fill="freeze"/>';
+      layer.appendChild(ring); try{ $$('animate',ring).forEach(function(an){ an.beginElement(); }); }catch(e){}
+      setTimeout(function(){ if(ring.parentNode) ring.parentNode.removeChild(ring); },600);
+    },3000);
+  }
+  var hero=$('.hero');
+  if(hero){
+    hero.addEventListener('click', function(e){ if(e.target.closest('a,button,.term,.install')) return; feed(); });
+    if('IntersectionObserver' in window){ new IntersectionObserver(function(es){ heroVisible=es[0].isIntersecting; }).observe(hero); }
+    if(!REDUCE){ setTimeout(feed,1400); setInterval(function(){ if(heroVisible && !document.hidden && parseHash().page==='home') feed(); }, 2600); }
+  }
+})();
+
+/* ---------- boot ---------- */
+walletUI();
+route(true);
+window.addEventListener('load', quietReconnect);
+if(document.readyState==='complete') quietReconnect();
+})();
+</script>
+</body>
+</html>
